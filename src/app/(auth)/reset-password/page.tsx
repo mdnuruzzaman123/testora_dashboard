@@ -76,7 +76,7 @@ function ResetPasswordForm() {
   if (success) {
     return (
       <div className="w-full max-w-[420px] px-4">
-        <div className="rounded-2xl border border-gray-200 bg-white px-8 py-10 shadow-sm text-center">
+        <div className="rounded-2xl border border-gray-200 bg-white px-8 py-10 text-center shadow-sm">
           <div className="mb-4 flex justify-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100">
               <CheckCircle2 className="h-9 w-9 text-green-500" />
@@ -155,7 +155,7 @@ function ResetPasswordForm() {
                 {...register("password")}
                 placeholder="Enter new password"
                 className={cn(
-                  "w-full rounded-lg border py-2.5 pl-3.5 pr-10 text-sm text-gray-900 placeholder-gray-400 transition outline-none",
+                  "w-full rounded-lg border py-2.5 pr-10 pl-3.5 text-sm text-gray-900 placeholder-gray-400 transition outline-none",
                   "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20",
                   errors.password
                     ? "border-red-400 bg-red-50 focus:border-red-400 focus:ring-red-400/20"
@@ -165,7 +165,7 @@ function ResetPasswordForm() {
               <button
                 type="button"
                 onClick={() => setShowPass((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
                 {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -203,7 +203,9 @@ function ResetPasswordForm() {
                       met ? "text-green-600" : "text-gray-400"
                     )}
                   >
-                    <CheckCircle2 className={cn("h-3.5 w-3.5", met ? "text-green-500" : "text-gray-300")} />
+                    <CheckCircle2
+                      className={cn("h-3.5 w-3.5", met ? "text-green-500" : "text-gray-300")}
+                    />
                     {r.label}
                   </p>
                 );
@@ -222,7 +224,7 @@ function ResetPasswordForm() {
                 {...register("confirmPassword")}
                 placeholder="Confirm new password"
                 className={cn(
-                  "w-full rounded-lg border py-2.5 pl-3.5 pr-10 text-sm text-gray-900 placeholder-gray-400 transition outline-none",
+                  "w-full rounded-lg border py-2.5 pr-10 pl-3.5 text-sm text-gray-900 placeholder-gray-400 transition outline-none",
                   "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20",
                   errors.confirmPassword
                     ? "border-red-400 bg-red-50 focus:border-red-400 focus:ring-red-400/20"
@@ -232,7 +234,7 @@ function ResetPasswordForm() {
               <button
                 type="button"
                 onClick={() => setShowConfirm((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
                 {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>

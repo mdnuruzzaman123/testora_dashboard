@@ -48,7 +48,9 @@ function VerifyOtpForm() {
     if (!pasted) return;
     e.preventDefault();
     const next = [...otp];
-    pasted.split("").forEach((c, i) => { next[i] = c; });
+    pasted.split("").forEach((c, i) => {
+      next[i] = c;
+    });
     setOtp(next);
     inputRefs.current[Math.min(pasted.length, OTP_LENGTH - 1)]?.focus();
   };
@@ -129,7 +131,9 @@ function VerifyOtpForm() {
           {otp.map((digit, i) => (
             <input
               key={i}
-              ref={(el) => { inputRefs.current[i] = el; }}
+              ref={(el) => {
+                inputRefs.current[i] = el;
+              }}
               type="text"
               inputMode="numeric"
               maxLength={1}
@@ -143,9 +147,7 @@ function VerifyOtpForm() {
           ))}
         </div>
 
-        {error && (
-          <p className="mb-4 text-center text-xs text-red-500">{error}</p>
-        )}
+        {error && <p className="mb-4 text-center text-xs text-red-500">{error}</p>}
 
         <button
           onClick={handleVerify}
