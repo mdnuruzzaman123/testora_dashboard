@@ -4,8 +4,13 @@ export const ROUTES = {
   HOME: "/",
   LOGIN: "/login",
   DASHBOARD: "/dashboard",
-  USERS: "/dashboard/users",
-  SETTINGS: "/dashboard/settings",
+  USERS: "/users",
+  PREMIUM_USERS: "/premium-users",
+  QUESTIONS: "/questions",
+  BLOG: "/blog",
+  MARKETPLACE: "/marketplace",
+  ORDERS: "/orders",
+  SETTINGS: "/settings",
 } as const;
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api";

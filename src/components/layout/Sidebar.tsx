@@ -1,49 +1,99 @@
 "use client";
 
 import Link from "next/link";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { toggleSidebar } from "@/store/slices/uiSlice";
-import { APP_NAME, ROUTES } from "@/constants";
+import { usePathname } from "next/navigation";
+import {
+  LayoutGrid,
+  Users,
+  Crown,
+  CircleHelp,
+  FileText,
+  ShoppingBag,
+  Package,
+  Settings,
+  LogOut,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const navItems = [
+  { href: "/dashboard", label: "Overview", icon: LayoutGrid },
+  { href: "/users", label: "User Management", icon: Users },
+  { href: "/premium-users", label: "Premium Users", icon: Crown },
+  { href: "/questions", label: "Question & Test Section", icon: CircleHelp },
+  { href: "/blog", label: "Blog", icon: FileText },
+  { href: "/marketplace", label: "Marketplace", icon: ShoppingBag },
+  { href: "/orders", label: "Order", icon: Package },
+];
 
 export default function Sidebar() {
-  const dispatch = useAppDispatch();
-  const sidebarOpen = useAppSelector((state) => state.ui.sidebarOpen);
+  const pathname = usePathname();
 
-  const navItems = [
-    { label: "Dashboard", href: ROUTES.DASHBOARD },
-    { label: "Users", href: ROUTES.USERS },
-    { label: "Settings", href: ROUTES.SETTINGS },
-  ];
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
   return (
-    <aside
-      className={`${
-        sidebarOpen ? "w-64" : "w-16"
-      } flex shrink-0 flex-col border-r border-gray-200 bg-white transition-all duration-300 dark:border-gray-800 dark:bg-gray-900`}
-    >
-      <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4 dark:border-gray-800">
-        {sidebarOpen && (
-          <span className="text-lg font-semibold text-gray-900 dark:text-white">{APP_NAME}</span>
-        )}
-        <button
-          onClick={() => dispatch(toggleSidebar())}
-          className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-          aria-label="Toggle sidebar"
-        >
-          ☰
-        </button>
+    <aside className="flex h-screen w-52 shrink-0 flex-col border-r border-gray-200 bg-white">
+      {/* Logo */}
+      <div className="flex items-center gap-2.5 px-4 py-5">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-blue-500 shadow-sm">
+          {/* Testora rocket/arrow mark */}
+          <svg
+            className="h-5 w-5 text-white"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 2L12 22M12 2L6 8M12 2L18 8" />
+          </svg>
+        </div>
+        <span className="text-[15px] font-extrabold tracking-widest text-gray-900">TESTORA</span>
       </div>
-      <nav className="flex flex-1 flex-col gap-1 p-2">
+
+      {/* Nav */}
+      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-1">
         {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className="flex items-center rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+              isActive(item.href)
+                ? "bg-blue-600 text-white"
+                : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+            )}
           >
-            {sidebarOpen ? item.label : item.label[0]}
+            <item.icon className="h-[17px] w-[17px] shrink-0" />
+            {item.label}
           </Link>
         ))}
       </nav>
+
+      {/* Bottom */}
+      <div className="border-t border-gray-100 px-2 py-3">
+        <Link
+          href="/settings"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+            isActive("/settings")
+              ? "bg-blue-600 text-white"
+              : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+          )}
+        >
+          <Settings className="h-[17px] w-[17px] shrink-0" />
+          Settings
+        </Link>
+        <button
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          onClick={() => {
+            /* TODO: handle logout / dispatch logout action */
+          }}
+        >
+          <LogOut className="h-[17px] w-[17px] shrink-0" />
+          Log out
+        </button>
+      </div>
     </aside>
   );
 }
