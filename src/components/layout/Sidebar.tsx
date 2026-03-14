@@ -34,7 +34,7 @@ export default function Sidebar() {
     <aside className="flex h-screen w-52 shrink-0 flex-col border-r border-gray-200 bg-white">
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-4 py-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-teal-400 to-blue-500 shadow-sm">
+        <div className="from-primary to-primary2 flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br shadow-sm">
           {/* Testora rocket/arrow mark */}
           <svg
             className="h-5 w-5 text-white"
