@@ -34,7 +34,7 @@ export default function Sidebar() {
     <aside className="flex h-screen w-52 shrink-0 flex-col border-r border-gray-200 bg-white">
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-4 py-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-blue-500 shadow-sm">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-teal-400 to-blue-500 shadow-sm">
           {/* Testora rocket/arrow mark */}
           <svg
             className="h-5 w-5 text-white"
@@ -64,7 +64,7 @@ export default function Sidebar() {
                 : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
             )}
           >
-            <item.icon className="h-[17px] w-[17px] shrink-0" />
+            <item.icon className="size-4.25 shrink-0" />
             {item.label}
           </Link>
         ))}
@@ -81,7 +81,7 @@ export default function Sidebar() {
               : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
           )}
         >
-          <Settings className="h-[17px] w-[17px] shrink-0" />
+          <Settings className="size-4.25 shrink-0" />
           Settings
         </Link>
         <button
@@ -90,7 +90,7 @@ export default function Sidebar() {
             /* TODO: handle logout / dispatch logout action */
           }}
         >
-          <LogOut className="h-[17px] w-[17px] shrink-0" />
+          <LogOut className="size-4.25 shrink-0" />
           Log out
         </button>
       </div>
