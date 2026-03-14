@@ -25,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.className} ${geistMono.variable} antialiased`}>
+      <body
+        suppressHydrationWarning
+        className={`${geistSans.className} ${geistMono.variable} antialiased`}
+      >
         <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>

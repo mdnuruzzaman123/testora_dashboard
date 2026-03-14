@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff, AlertCircle, Lock, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +43,6 @@ function strengthLabel(score: number): { label: string; color: string } {
 }
 
 function ResetPasswordForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
 
@@ -55,15 +54,16 @@ function ResetPasswordForm() {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
-  const passwordValue = watch("password") ?? "";
+  const passwordValue = useWatch({ control, name: "password", defaultValue: "" });
   const metCount = requirements.filter((r) => r.test(passwordValue)).length;
   const { label: strengthText, color: strengthColor } = strengthLabel(metCount);
 
   const onSubmit = async (_data: FormValues) => {
+    console.log(_data);
     setServerError(null);
     try {
       await new Promise((r) => setTimeout(r, 900));
@@ -75,190 +75,171 @@ function ResetPasswordForm() {
 
   if (success) {
     return (
-      <div className="w-full max-w-[420px] px-4">
-        <div className="rounded-2xl border border-gray-200 bg-white px-8 py-10 text-center shadow-sm">
-          <div className="mb-4 flex justify-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100">
-              <CheckCircle2 className="h-9 w-9 text-green-500" />
-            </div>
+      <div className="w-full max-w-100 text-center">
+        <div className="mb-5 flex justify-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-green-100">
+            <CheckCircle2 className="h-10 w-10 text-green-500" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900">Password Updated!</h2>
-          <p className="mt-2 mb-6 text-sm text-gray-500">
-            Your password has been reset successfully. You can now log in with your new password.
-          </p>
-          <Link
-            href="/login"
-            className="block w-full rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-700"
-          >
-            Back to Login
-          </Link>
-          {email && (
-            <p className="mt-4 text-xs text-gray-400">
-              For your security, we recommend safely storing your new password.
-            </p>
-          )}
         </div>
+        <h2 className="mb-2 text-2xl font-bold text-gray-900">Password Updated</h2>
+        <p className="mb-6 text-sm text-gray-500">
+          Your password has been reset successfully. You can now log in with your new password.
+        </p>
+        {/* Updated email hint */}
+        {email && (
+          <div className="mb-5 rounded-lg border border-green-200 bg-green-50 p-3 text-xs text-green-700">
+            ✓ Your account email has been successfully updated.
+          </div>
+        )}
+        <Link
+          href={"/login"}
+          className="bg-primary hover:bg-primary/90 block w-full rounded-lg py-2.5 text-sm font-semibold text-white transition"
+        >
+          Back to Login
+        </Link>
+        <p className="mt-4 text-xs text-gray-400">
+          For your security, we recommend safely storing your new password and device information.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-[420px] px-4">
-      {/* Brand */}
-      <div className="mb-8 flex flex-col items-center gap-3">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-400 to-blue-500 shadow-lg">
-          <svg
-            className="h-7 w-7 text-white"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 2L12 22M12 2L6 8M12 2L18 8" />
-          </svg>
-        </div>
-        <div className="text-center">
-          <h1 className="text-2xl font-extrabold tracking-widest text-gray-900">TESTORA</h1>
-          <p className="mt-0.5 text-sm text-gray-400">Admin Portal</p>
+    <div className="w-full max-w-100">
+      {/* Icon */}
+      <div className="mb-5 flex justify-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100">
+          <Lock className="text-primary h-7 w-7" />
         </div>
       </div>
 
-      {/* Card */}
-      <div className="rounded-2xl border border-gray-200 bg-white px-8 py-8 shadow-sm">
-        <div className="mb-5 flex justify-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50">
-            <Lock className="h-7 w-7 text-blue-600" />
-          </div>
+      <h2 className="mb-1 text-center text-2xl font-bold text-gray-900">Create New Password</h2>
+      <p className="mb-6 text-center text-sm text-gray-500">
+        Your new password must be different from your previous password.
+      </p>
+
+      {serverError && (
+        <div className="mb-4 flex items-center gap-2.5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          {serverError}
         </div>
+      )}
 
-        <h2 className="text-center text-xl font-semibold text-gray-900">Create New Password</h2>
-        <p className="mt-1 mb-6 text-center text-sm text-gray-500">
-          Your new password must be different from your previous password.
-        </p>
-
-        {serverError && (
-          <div className="mb-5 flex items-center gap-2.5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            {serverError}
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+        {/* New password */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">New Password</label>
+          <div className="relative">
+            <Lock className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type={showPass ? "text" : "password"}
+              {...register("password")}
+              placeholder="Enter new password"
+              className={cn(
+                "w-full rounded-lg border py-2.5 pr-10 pl-10 text-sm placeholder-gray-400 transition outline-none",
+                "focus:border-primary focus:ring-primary/20 focus:ring-2",
+                errors.password
+                  ? "border-red-400 bg-red-50 focus:border-red-400 focus:ring-red-400/20"
+                  : "border-gray-200 bg-white"
+              )}
+            />
+            <button
+              type="button"
+              tabIndex={-1}
+              onClick={() => setShowPass((v) => !v)}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
-          {/* New password */}
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">New Password</label>
-            <div className="relative">
-              <input
-                type={showPass ? "text" : "password"}
-                {...register("password")}
-                placeholder="Enter new password"
-                className={cn(
-                  "w-full rounded-lg border py-2.5 pr-10 pl-3.5 text-sm text-gray-900 placeholder-gray-400 transition outline-none",
-                  "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20",
-                  errors.password
-                    ? "border-red-400 bg-red-50 focus:border-red-400 focus:ring-red-400/20"
-                    : "border-gray-300 bg-white"
-                )}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPass((v) => !v)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-
-            {/* Strength bar */}
-            {passwordValue && (
-              <div className="mt-2">
-                <div className="mb-1 flex items-center justify-between">
-                  <div className="flex flex-1 gap-0.5">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <div
-                        key={i}
-                        className={cn(
-                          "h-1 flex-1 rounded-full transition-all",
-                          i <= metCount ? strengthColor : "bg-gray-200"
-                        )}
-                      />
-                    ))}
-                  </div>
-                  <span className="ml-2 text-xs font-medium text-gray-500">{strengthText}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Requirements checklist */}
-            <div className="mt-2 space-y-1">
-              {requirements.map((r) => {
-                const met = r.test(passwordValue);
-                return (
-                  <p
-                    key={r.label}
+          {/* Strength bar */}
+          {passwordValue && (
+            <div className="mt-2">
+              <div className="mb-1.5 flex items-center gap-1.5">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div
+                    key={i}
                     className={cn(
-                      "flex items-center gap-1.5 text-xs",
-                      met ? "text-green-600" : "text-gray-400"
+                      "h-1 flex-1 rounded-full transition-all",
+                      i <= metCount ? strengthColor : "bg-gray-200"
                     )}
-                  >
-                    <CheckCircle2
-                      className={cn("h-3.5 w-3.5", met ? "text-green-500" : "text-gray-300")}
-                    />
-                    {r.label}
-                  </p>
-                );
-              })}
+                  />
+                ))}
+                <span className="ml-1 text-xs font-medium text-gray-500">{strengthText}</span>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Confirm password */}
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">
-              Confirm New Password
-            </label>
-            <div className="relative">
-              <input
-                type={showConfirm ? "text" : "password"}
-                {...register("confirmPassword")}
-                placeholder="Confirm new password"
-                className={cn(
-                  "w-full rounded-lg border py-2.5 pr-10 pl-3.5 text-sm text-gray-900 placeholder-gray-400 transition outline-none",
-                  "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20",
-                  errors.confirmPassword
-                    ? "border-red-400 bg-red-50 focus:border-red-400 focus:ring-red-400/20"
-                    : "border-gray-300 bg-white"
-                )}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirm((v) => !v)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-            {errors.confirmPassword && (
-              <p className="mt-1.5 flex items-center gap-1 text-xs text-red-500">
-                <AlertCircle className="h-3 w-3" />
-                {errors.confirmPassword.message}
-              </p>
-            )}
+          {/* Requirements */}
+          <div className="mt-2 space-y-1">
+            {requirements.map((r) => {
+              const met = r.test(passwordValue);
+              return (
+                <p
+                  key={r.label}
+                  className={cn(
+                    "flex items-center gap-1.5 text-xs",
+                    met ? "text-green-600" : "text-gray-400"
+                  )}
+                >
+                  <CheckCircle2
+                    className={cn("h-3.5 w-3.5 shrink-0", met ? "text-green-500" : "text-gray-300")}
+                  />
+                  {r.label}
+                </p>
+              );
+            })}
           </div>
+        </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isSubmitting && (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            )}
-            {isSubmitting ? "Saving..." : "Save New Password"}
-          </button>
-        </form>
-      </div>
+        {/* Confirm password */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            Confirm New Password
+          </label>
+          <div className="relative">
+            <Lock className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type={showConfirm ? "text" : "password"}
+              {...register("confirmPassword")}
+              placeholder="Confirm new password"
+              className={cn(
+                "w-full rounded-lg border py-2.5 pr-10 pl-10 text-sm placeholder-gray-400 transition outline-none",
+                "focus:border-primary focus:ring-primary/20 focus:ring-2",
+                errors.confirmPassword
+                  ? "border-red-400 bg-red-50 focus:border-red-400 focus:ring-red-400/20"
+                  : "border-gray-200 bg-white"
+              )}
+            />
+            <button
+              type="button"
+              tabIndex={-1}
+              onClick={() => setShowConfirm((v) => !v)}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+          {errors.confirmPassword && (
+            <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
+              <AlertCircle className="h-3 w-3" />
+              {errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-primary hover:bg-primary/90 flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold text-white transition disabled:opacity-60"
+        >
+          {isSubmitting && (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          )}
+          {isSubmitting ? "Saving..." : "Save New Password"}
+        </button>
+      </form>
     </div>
   );
 }
