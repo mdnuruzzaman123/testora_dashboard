@@ -1,5 +1,5 @@
 import { questionOrderRows } from "@/lib/test-archive-data";
-import { GripVertical, ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp, GripVertical } from "lucide-react";
 
 export default function QuestionOrderConfigurationSection() {
   return (
@@ -15,18 +15,29 @@ export default function QuestionOrderConfigurationSection() {
 
       <div className="space-y-2">
         {questionOrderRows.map((row) => (
-          <div key={row.id} className="flex items-center gap-2 rounded-md border border-[#dce7f2] bg-[#f8fbff] px-2.5 py-2">
+          <div
+            key={row.id}
+            className="flex items-center gap-2 rounded-md border border-[#dce7f2] bg-[#f8fbff] px-2.5 py-2"
+          >
             <GripVertical className="h-3.5 w-3.5 text-[#9ab0c3]" />
-            <span className="w-6 text-center text-xs font-semibold text-[#2f86d8]">{row.order}</span>
+            <span className="w-6 text-center text-xs font-semibold text-[#2f86d8]">
+              {row.order}
+            </span>
             <span className="w-14 text-xs text-[#90a3b6]">{row.id}</span>
             <p className="flex-1 text-xs text-[#4f6d87]">{row.title}</p>
             {row.tag ? (
-              <span className="rounded-sm border border-[#e4ddf4] bg-[#f1edfb] px-2 py-0.5 text-[10px] text-[#8468c4]">{row.tag}</span>
+              <span className="rounded-sm border border-[#e4ddf4] bg-[#f1edfb] px-2 py-0.5 text-[10px] text-[#8468c4]">
+                {row.tag}
+              </span>
             ) : (
               <span className="text-[10px] text-[#c0cede]">—</span>
             )}
-            <button type="button" className="rounded p-1 text-[#7f95aa] hover:bg-[#f3f7fb]"><ChevronUp className="h-3 w-3" /></button>
-            <button type="button" className="rounded p-1 text-[#7f95aa] hover:bg-[#f3f7fb]"><ChevronDown className="h-3 w-3" /></button>
+            <button type="button" className="rounded p-1 text-[#7f95aa] hover:bg-[#f3f7fb]">
+              <ChevronUp className="h-3 w-3" />
+            </button>
+            <button type="button" className="rounded p-1 text-[#7f95aa] hover:bg-[#f3f7fb]">
+              <ChevronDown className="h-3 w-3" />
+            </button>
           </div>
         ))}
       </div>

@@ -11,7 +11,9 @@ export default function TestAssignmentSection({ category, subject, faculty, depa
   return (
     <section className="rounded-lg border border-[#dce7f2] bg-white p-4">
       <h3 className="text-sm font-semibold text-[#3f5f7a]">Test Assignment</h3>
-      <p className="mb-3 text-xs text-[#90a3b6]">Assign the test to the correct subject, faculty, or department</p>
+      <p className="mb-3 text-xs text-[#90a3b6]">
+        Assign the test to the correct subject, faculty, or department
+      </p>
 
       <div className="rounded-md border border-[#c8ddf2] bg-[#eaf4fd] p-3">
         <ul className="space-y-1 text-xs text-[#4a7eb8]">

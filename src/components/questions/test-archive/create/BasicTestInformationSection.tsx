@@ -1,4 +1,10 @@
-import { ACCESS_OPTIONS, DEPARTMENTS_BY_FACULTY, FACULTIES, QUESTION_YEARS, SUBJECTS } from "@/lib/question-system-data";
+import {
+  ACCESS_OPTIONS,
+  DEPARTMENTS_BY_FACULTY,
+  FACULTIES,
+  QUESTION_YEARS,
+  SUBJECTS,
+} from "@/lib/question-system-data";
 
 type TestCategory = "Semimatura" | "Matura" | "Entrance Exam";
 
@@ -26,7 +32,7 @@ const inputClass =
 
 export default function BasicTestInformationSection({ data, onChange }: Props) {
   const isEntrance = data.category === "Entrance Exam";
-  const departmentOptions = data.faculty ? DEPARTMENTS_BY_FACULTY[data.faculty] ?? [] : [];
+  const departmentOptions = data.faculty ? (DEPARTMENTS_BY_FACULTY[data.faculty] ?? []) : [];
 
   return (
     <section className="rounded-lg border border-[#dce7f2] bg-white p-4">
@@ -59,7 +65,11 @@ export default function BasicTestInformationSection({ data, onChange }: Props) {
 
         <div>
           <label className="mb-1 block text-xs font-medium text-[#587189]">Year</label>
-          <select value={data.year} onChange={(e) => onChange("year", e.target.value)} className={inputClass}>
+          <select
+            value={data.year}
+            onChange={(e) => onChange("year", e.target.value)}
+            className={inputClass}
+          >
             {QUESTION_YEARS.map((y) => (
               <option key={y} value={y}>
                 {y}
@@ -136,7 +146,11 @@ export default function BasicTestInformationSection({ data, onChange }: Props) {
 
         <div>
           <label className="mb-1 block text-xs font-medium text-[#587189]">Test Type</label>
-          <select value={data.testType} onChange={(e) => onChange("testType", e.target.value)} className={inputClass}>
+          <select
+            value={data.testType}
+            onChange={(e) => onChange("testType", e.target.value)}
+            className={inputClass}
+          >
             <option value="Official">Official</option>
             <option value="Additional">Additional</option>
           </select>
@@ -152,7 +166,11 @@ export default function BasicTestInformationSection({ data, onChange }: Props) {
                   key={option}
                   type="button"
                   onClick={() => onChange("access", option)}
-                  className={active ? "rounded-md border border-[#d6e5f4] bg-[#eaf2fb] px-3 py-2 text-xs font-medium text-[#4d93d9]" : "rounded-md border border-[#dce7f2] bg-[#f8fbff] px-3 py-2 text-xs font-medium text-[#7e95ab]"}
+                  className={
+                    active
+                      ? "rounded-md border border-[#d6e5f4] bg-[#eaf2fb] px-3 py-2 text-xs font-medium text-[#4d93d9]"
+                      : "rounded-md border border-[#dce7f2] bg-[#f8fbff] px-3 py-2 text-xs font-medium text-[#7e95ab]"
+                  }
                 >
                   {option}
                 </button>
@@ -163,7 +181,11 @@ export default function BasicTestInformationSection({ data, onChange }: Props) {
 
         <div>
           <label className="mb-1 block text-xs font-medium text-[#587189]">Status</label>
-          <select value={data.status} onChange={(e) => onChange("status", e.target.value)} className={inputClass}>
+          <select
+            value={data.status}
+            onChange={(e) => onChange("status", e.target.value)}
+            className={inputClass}
+          >
             <option value="Draft">Draft</option>
             <option value="Published">Published</option>
           </select>

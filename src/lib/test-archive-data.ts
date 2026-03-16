@@ -115,14 +115,70 @@ export type LinkedQuestionRow = {
 };
 
 export const linkedQuestionsRows: LinkedQuestionRow[] = [
-  { id: "Q-001", text: "Calculate the derivative of f(x) = 3x² + 2", subject: "Mathematics", order: 1, passage: "—", status: "Published" },
-  { id: "Q-002", text: "Identify the main theme of the given passage", subject: "Albanian Language", order: 2, passage: "P-001", status: "Published" },
-  { id: "Q-003", text: "What is the chemical formula for water?", subject: "Chemistry", order: 3, passage: "—", status: "Published" },
-  { id: "Q-004", text: "Explain the process of photosynthesis", subject: "Biology", order: 4, passage: "—", status: "Draft" },
-  { id: "Q-005", text: "Solve the system of linear equations", subject: "Mathematics", order: 5, passage: "—", status: "Published" },
-  { id: "Q-006", text: "Analyze the literary device used in paragraph 2", subject: "Albanian Language", order: 6, passage: "P-001", status: "Published" },
-  { id: "Q-007", text: "What is Newton's second law of motion?", subject: "Physics", order: 7, passage: "—", status: "Published" },
-  { id: "Q-008", text: "Describe the causes of World War I", subject: "History", order: 8, passage: "—", status: "Published" },
+  {
+    id: "Q-001",
+    text: "Calculate the derivative of f(x) = 3x² + 2",
+    subject: "Mathematics",
+    order: 1,
+    passage: "—",
+    status: "Published",
+  },
+  {
+    id: "Q-002",
+    text: "Identify the main theme of the given passage",
+    subject: "Albanian Language",
+    order: 2,
+    passage: "P-001",
+    status: "Published",
+  },
+  {
+    id: "Q-003",
+    text: "What is the chemical formula for water?",
+    subject: "Chemistry",
+    order: 3,
+    passage: "—",
+    status: "Published",
+  },
+  {
+    id: "Q-004",
+    text: "Explain the process of photosynthesis",
+    subject: "Biology",
+    order: 4,
+    passage: "—",
+    status: "Draft",
+  },
+  {
+    id: "Q-005",
+    text: "Solve the system of linear equations",
+    subject: "Mathematics",
+    order: 5,
+    passage: "—",
+    status: "Published",
+  },
+  {
+    id: "Q-006",
+    text: "Analyze the literary device used in paragraph 2",
+    subject: "Albanian Language",
+    order: 6,
+    passage: "P-001",
+    status: "Published",
+  },
+  {
+    id: "Q-007",
+    text: "What is Newton's second law of motion?",
+    subject: "Physics",
+    order: 7,
+    passage: "—",
+    status: "Published",
+  },
+  {
+    id: "Q-008",
+    text: "Describe the causes of World War I",
+    subject: "History",
+    order: 8,
+    passage: "—",
+    status: "Published",
+  },
 ];
 
 export const questionOrderRows = [

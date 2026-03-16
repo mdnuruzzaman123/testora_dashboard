@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import type { TestArchiveRow } from "@/lib/test-archive-data";
+import { cn } from "@/lib/utils";
 import { Copy, Eye, Pencil, Trash2 } from "lucide-react";
 
 function statusClass(status: TestArchiveRow["status"]) {
@@ -52,16 +52,32 @@ export default function ArchiveRow({ row }: { row: TestArchiveRow }) {
       </td>
       <td className="px-4 py-2.5">
         <div className="flex items-center gap-0.5 text-[#7f95aa]">
-          <button type="button" aria-label="View test" className="rounded p-1 hover:bg-[#f3f7fb] hover:text-[#2f86d8]">
+          <button
+            type="button"
+            aria-label="View test"
+            className="rounded p-1 hover:bg-[#f3f7fb] hover:text-[#2f86d8]"
+          >
             <Eye className="h-3.5 w-3.5" />
           </button>
-          <button type="button" aria-label="Edit test" className="rounded p-1 hover:bg-[#f3f7fb] hover:text-[#2f86d8]">
+          <button
+            type="button"
+            aria-label="Edit test"
+            className="rounded p-1 hover:bg-[#f3f7fb] hover:text-[#2f86d8]"
+          >
             <Pencil className="h-3.5 w-3.5" />
           </button>
-          <button type="button" aria-label="Duplicate test" className="rounded p-1 hover:bg-[#f3f7fb] hover:text-[#2f86d8]">
+          <button
+            type="button"
+            aria-label="Duplicate test"
+            className="rounded p-1 hover:bg-[#f3f7fb] hover:text-[#2f86d8]"
+          >
             <Copy className="h-3.5 w-3.5" />
           </button>
-          <button type="button" aria-label="Delete test" className="rounded p-1 hover:bg-[#fdeeee] hover:text-[#db6f6f]">
+          <button
+            type="button"
+            aria-label="Delete test"
+            className="rounded p-1 hover:bg-[#fdeeee] hover:text-[#db6f6f]"
+          >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>

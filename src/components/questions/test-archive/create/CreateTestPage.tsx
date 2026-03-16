@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { ChevronLeft, Info } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import BasicTestInformationSection from "./BasicTestInformationSection";
 import PassageIntegrationSection from "./PassageIntegrationSection";
@@ -77,12 +77,16 @@ export default function CreateTestPage() {
           </div>
         </div>
 
-        <span className="rounded-full border border-[#f0dfb9] bg-[#fff3da] px-2 py-0.5 text-[10px] font-medium text-[#c48a2e]">Draft</span>
+        <span className="rounded-full border border-[#f0dfb9] bg-[#fff3da] px-2 py-0.5 text-[10px] font-medium text-[#c48a2e]">
+          Draft
+        </span>
       </div>
 
       <div>
         <h3 className="text-sm font-semibold text-[#3f5f7a]">Create Test Structure</h3>
-        <p className="text-xs text-[#90a3b6]">Define a test structure and link it to questions from the Question Bank</p>
+        <p className="text-xs text-[#90a3b6]">
+          Define a test structure and link it to questions from the Question Bank
+        </p>
       </div>
 
       <section className="rounded-lg border border-[#c8ddf2] bg-[#eaf4fd] p-3">
@@ -91,10 +95,18 @@ export default function CreateTestPage() {
           <p className="text-xs font-semibold text-[#3a6e9e]">How Create Test Works</p>
         </div>
         <div className="grid gap-2 md:grid-cols-2">
-          <p className="rounded-md border border-[#d6e7f7] bg-[#f3f8fd] px-2.5 py-1.5 text-xs text-[#4a7eb8]">This screen creates test structures only — no question content is duplicated.</p>
-          <p className="rounded-md border border-[#d6e7f7] bg-[#f3f8fd] px-2.5 py-1.5 text-xs text-[#4a7eb8]">Questions remain in the Question Bank and are never duplicated.</p>
-          <p className="rounded-md border border-[#d6e7f7] bg-[#f3f8fd] px-2.5 py-1.5 text-xs text-[#4a7eb8]">To use in tests, all questions should be visible, with status Published.</p>
-          <p className="rounded-md border border-[#d6e7f7] bg-[#f3f8fd] px-2.5 py-1.5 text-xs text-[#4a7eb8]">One question can appear in multiple tests across different categories.</p>
+          <p className="rounded-md border border-[#d6e7f7] bg-[#f3f8fd] px-2.5 py-1.5 text-xs text-[#4a7eb8]">
+            This screen creates test structures only — no question content is duplicated.
+          </p>
+          <p className="rounded-md border border-[#d6e7f7] bg-[#f3f8fd] px-2.5 py-1.5 text-xs text-[#4a7eb8]">
+            Questions remain in the Question Bank and are never duplicated.
+          </p>
+          <p className="rounded-md border border-[#d6e7f7] bg-[#f3f8fd] px-2.5 py-1.5 text-xs text-[#4a7eb8]">
+            To use in tests, all questions should be visible, with status Published.
+          </p>
+          <p className="rounded-md border border-[#d6e7f7] bg-[#f3f8fd] px-2.5 py-1.5 text-xs text-[#4a7eb8]">
+            One question can appear in multiple tests across different categories.
+          </p>
         </div>
       </section>
 
@@ -121,12 +133,37 @@ export default function CreateTestPage() {
       />
 
       <section className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#dce7f2] bg-white p-3">
-        <button type="button" className="rounded-md border border-[#dce7f2] bg-white px-3 py-2 text-xs font-medium text-[#5e768e] hover:bg-[#f8fbff]">Cancel</button>
+        <button
+          type="button"
+          className="rounded-md border border-[#dce7f2] bg-white px-3 py-2 text-xs font-medium text-[#5e768e] hover:bg-[#f8fbff]"
+        >
+          Cancel
+        </button>
         <div className="flex flex-wrap items-center gap-2">
-          <button type="button" className="rounded-md border border-[#dce7f2] bg-white px-3 py-2 text-xs font-medium text-[#5e768e] hover:bg-[#f8fbff]">Duplicate from Existing</button>
-          <button type="button" className="rounded-md border border-[#d6e5f4] bg-[#eaf2fb] px-3 py-2 text-xs font-medium text-[#4d93d9] hover:bg-[#dbeafa]">Save Draft</button>
-          <button type="button" className="rounded-md border border-[#dce7f2] bg-white px-3 py-2 text-xs font-medium text-[#5e768e] hover:bg-[#f8fbff]">Preview</button>
-          <button type="button" className="rounded-md bg-[#2f86d8] px-3 py-2 text-xs font-medium text-white hover:bg-[#2a78c6]">Publish Test</button>
+          <button
+            type="button"
+            className="rounded-md border border-[#dce7f2] bg-white px-3 py-2 text-xs font-medium text-[#5e768e] hover:bg-[#f8fbff]"
+          >
+            Duplicate from Existing
+          </button>
+          <button
+            type="button"
+            className="rounded-md border border-[#d6e5f4] bg-[#eaf2fb] px-3 py-2 text-xs font-medium text-[#4d93d9] hover:bg-[#dbeafa]"
+          >
+            Save Draft
+          </button>
+          <button
+            type="button"
+            className="rounded-md border border-[#dce7f2] bg-white px-3 py-2 text-xs font-medium text-[#5e768e] hover:bg-[#f8fbff]"
+          >
+            Preview
+          </button>
+          <button
+            type="button"
+            className="rounded-md bg-[#2f86d8] px-3 py-2 text-xs font-medium text-white hover:bg-[#2a78c6]"
+          >
+            Publish Test
+          </button>
         </div>
       </section>
     </div>
