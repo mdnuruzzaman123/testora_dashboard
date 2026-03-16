@@ -29,7 +29,7 @@ function FilterSelect({
   label: string;
 }) {
   return (
-    <label className="inline-flex min-w-[130px] items-center gap-1 rounded-md border border-[#dce7f2] bg-[#f8fbff] px-2.5 py-1.5 text-xs text-[#587189]">
+    <label className="inline-flex min-w-32.5 items-center gap-1 rounded-md border border-[#dce7f2] bg-[#f8fbff] px-2.5 py-1.5 text-xs text-[#587189]">
       <span>{label}:</span>
       <select
         value={value}
@@ -51,7 +51,7 @@ export default function UserFilters(props: UserFiltersProps) {
     <div className="rounded-lg border border-[#dce7f2] bg-white p-3">
       <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-1 flex-col gap-2 md:flex-row md:flex-wrap md:items-center">
-          <label className="relative block w-full md:max-w-[270px]">
+          <label className="relative block w-full md:max-w-67.5">
             <Search className="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-[#9ab0c3]" />
             <input
               value={props.search}
