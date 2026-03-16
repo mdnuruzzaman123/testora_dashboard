@@ -197,7 +197,7 @@ export default function DashboardContent() {
           <h3 className="text-sm font-semibold text-[#3f5f7a]">Recent User</h3>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[860px] text-left">
+          <table className="w-full min-w-215 text-left">
             <thead className="bg-[#f3f7fb] text-[11px] text-[#6f859b]">
               <tr>
                 <th className="px-4 py-2.5 font-medium sm:px-5">#</th>

@@ -21,7 +21,7 @@ export default function UsersTable({
   return (
     <section className="overflow-hidden rounded-lg border border-[#dce7f2] bg-white">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[960px] text-left">
+        <table className="w-full min-w-240 text-left">
           <thead className="bg-[#f3f7fb] text-[11px] tracking-wide text-[#6f859b] uppercase">
             <tr>
               <th className="px-4 py-2.5 font-medium sm:px-5">User</th>
