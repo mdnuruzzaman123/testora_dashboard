@@ -1,14 +1,7 @@
 "use client";
 
-import { passageRows, passageEntityFields } from "@/lib/passages-data";
-import {
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  Plus,
-  Search,
-  Smartphone,
-} from "lucide-react";
+import { passageEntityFields, passageRows } from "@/lib/passages-data";
+import { AlertTriangle, CheckCircle2, Plus, Search, Smartphone, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import PassageTable from "./PassageTable";
@@ -56,7 +49,9 @@ export default function PassagesPage() {
       <section className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold text-[#3f5f7a]">Passage System</h2>
-          <p className="text-sm text-[#7e95ab]">Manage shared text blocks linked to multiple questions</p>
+          <p className="text-sm text-[#7e95ab]">
+            Manage shared text blocks linked to multiple questions
+          </p>
         </div>
         <Link
           href="/questions/passages/add"
@@ -71,10 +66,13 @@ export default function PassagesPage() {
       <section className="flex items-start gap-2.5 rounded-lg border border-[#f5d97d] bg-[#fffbea] px-4 py-3">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#c48a2e]" />
         <div>
-          <p className="text-xs font-semibold text-[#8a6120]">Critical Rule: A passage is NOT a question</p>
+          <p className="text-xs font-semibold text-[#8a6120]">
+            Critical Rule: A passage is NOT a question
+          </p>
           <p className="mt-0.5 text-xs text-[#a07430]">
-            A passage does not take a question number. It is a shared content block (text/image) displayed before its
-            linked questions. Question numbering continues normally — the passage itself is not counted.
+            A passage does not take a question number. It is a shared content block (text/image)
+            displayed before its linked questions. Question numbering continues normally — the
+            passage itself is not counted.
           </p>
         </div>
       </section>
@@ -95,10 +93,10 @@ export default function PassagesPage() {
                   item.green
                     ? "text-xs font-medium text-[#2d7a52]"
                     : item.highlight
-                    ? "flex items-center gap-1.5 text-xs font-medium text-[#4a93d9]"
-                    : item.muted
-                    ? "text-xs text-[#90a3b6] pl-4"
-                    : "text-xs text-[#5e768e] pl-4"
+                      ? "flex items-center gap-1.5 text-xs font-medium text-[#4a93d9]"
+                      : item.muted
+                        ? "pl-4 text-xs text-[#90a3b6]"
+                        : "pl-4 text-xs text-[#5e768e]"
                 }
               >
                 {item.highlight && !item.green && (
@@ -124,7 +122,9 @@ export default function PassagesPage() {
                 <span className="inline-flex h-4 w-5 shrink-0 items-center justify-center rounded bg-[#fde8e8] text-[9px] font-bold text-[#db6f6f]">
                   Q{i + 1}
                 </span>
-                <span className="line-through opacity-70">{item.label.replace(/^Q\d — /, "").replace(" ✗", "")}</span>
+                <span className="line-through opacity-70">
+                  {item.label.replace(/^Q\d — /, "").replace(" ✗", "")}
+                </span>
                 <XCircle className="h-3 w-3 shrink-0 text-[#db6f6f]" />
               </div>
             ))}
@@ -137,7 +137,10 @@ export default function PassagesPage() {
         <h3 className="mb-3 text-sm font-semibold text-[#3f5f7a]">Passage Entity Fields</h3>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           {passageEntityFields.map((field) => (
-            <div key={field.label} className="rounded-md border border-[#dce7f2] bg-[#f8fbff] p-2.5">
+            <div
+              key={field.label}
+              className="rounded-md border border-[#dce7f2] bg-[#f8fbff] p-2.5"
+            >
               <p className="text-xs font-semibold text-[#3f5f7a]">{field.label}</p>
               {field.desc && <p className="mt-0.5 text-[10px] text-[#90a3b6]">{field.desc}</p>}
               {field.detail && <p className="mt-0.5 text-[10px] text-[#9ab0c3]">{field.detail}</p>}
@@ -167,7 +170,9 @@ export default function PassagesPage() {
             <div className="bg-white px-3 pb-3">
               {/* Header bar */}
               <div className="flex items-center justify-between border-b border-[#e8eef4] py-2">
-                <span className="text-[9px] font-semibold text-[#3f5f7a]">Semi-Matura 2022 · Simulation</span>
+                <span className="text-[9px] font-semibold text-[#3f5f7a]">
+                  Semi-Matura 2022 · Simulation
+                </span>
                 <span className="rounded-full bg-[#fff3da] px-1.5 py-0.5 text-[8px] font-medium text-[#c48a2e]">
                   PREMIUM
                 </span>
@@ -176,7 +181,9 @@ export default function PassagesPage() {
 
               {/* Passage banner */}
               <div className="mt-2 flex items-center justify-between rounded bg-[#edf4fb] px-2 py-1">
-                <span className="text-[8px] font-medium text-[#2f86d8]">Passage 1 (1–10 questions)</span>
+                <span className="text-[8px] font-medium text-[#2f86d8]">
+                  Passage 1 (1–10 questions)
+                </span>
                 <span className="rounded bg-[#2f86d8] px-1.5 py-0.5 text-[7px] font-medium text-white">
                   Open Text
                 </span>
@@ -192,8 +199,8 @@ export default function PassagesPage() {
 
               {/* Question text */}
               <p className="mt-2 text-[7.5px] leading-relaxed text-[#4a6070]">
-                1. A block of mass mmm is placed on a rough inclined plane making an angle θtheta with the
-                horizontal. The block is sliding down the plane...
+                1. A block of mass mmm is placed on a rough inclined plane making an angle θtheta
+                with the horizontal. The block is sliding down the plane...
               </p>
 
               {/* Answer options */}
@@ -235,9 +242,7 @@ export default function PassagesPage() {
               <span
                 key={pill}
                 className={`inline-flex h-6 w-8 items-center justify-center rounded text-[10px] font-semibold ${
-                  isPassageLinked
-                    ? "bg-[#d6eaf6] text-[#2f86d8]"
-                    : "bg-[#f3f7fb] text-[#587189]"
+                  isPassageLinked ? "bg-[#d6eaf6] text-[#2f86d8]" : "bg-[#f3f7fb] text-[#587189]"
                 }`}
               >
                 {pill}
@@ -253,7 +258,7 @@ export default function PassagesPage() {
             <span className="text-[10px] text-[#587189]">Passage-linked questions (Q1–Q10)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="inline-block h-3 w-3 rounded bg-[#f3f7fb] border border-[#dce7f2]" />
+            <span className="inline-block h-3 w-3 rounded border border-[#dce7f2] bg-[#f3f7fb]" />
             <span className="text-[10px] text-[#587189]">Next standalone question (Q11)</span>
           </div>
         </div>
@@ -261,11 +266,15 @@ export default function PassagesPage() {
         {/* Info grid */}
         <div className="mt-3 grid grid-cols-2 gap-3">
           <div className="rounded-md border border-[#dce7f2] bg-[#f8fbff] p-2.5">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#90a3b6]">Current Question</p>
+            <p className="text-[10px] font-semibold tracking-wide text-[#90a3b6] uppercase">
+              Current Question
+            </p>
             <p className="mt-1 text-sm font-semibold text-[#3f5f7a]">Position inside the test</p>
           </div>
           <div className="rounded-md border border-[#dce7f2] bg-[#f8fbff] p-2.5">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#90a3b6]">Max Question</p>
+            <p className="text-[10px] font-semibold tracking-wide text-[#90a3b6] uppercase">
+              Max Question
+            </p>
             <p className="mt-1 text-sm font-semibold text-[#3f5f7a]">Total questions in the test</p>
           </div>
         </div>

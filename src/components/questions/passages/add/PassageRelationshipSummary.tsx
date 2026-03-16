@@ -28,25 +28,33 @@ export default function PassageRelationshipSummary({ linkedCount, startOrder, en
 
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-md border border-[#dce7f2] bg-[#f8fbff] p-2.5">
-          <p className="text-[10px] font-medium uppercase tracking-wide text-[#90a3b6]">Passage ID</p>
+          <p className="text-[10px] font-medium tracking-wide text-[#90a3b6] uppercase">
+            Passage ID
+          </p>
           <p className="mt-1 text-lg font-bold text-[#3f5f7a]">—</p>
         </div>
         <div className="rounded-md border border-[#dce7f2] bg-[#f8fbff] p-2.5">
-          <p className="text-[10px] font-medium uppercase tracking-wide text-[#90a3b6]">Linked Questions</p>
+          <p className="text-[10px] font-medium tracking-wide text-[#90a3b6] uppercase">
+            Linked Questions
+          </p>
           <p className="mt-1 text-lg font-bold text-[#3f5f7a]">{linkedCount}</p>
         </div>
         <div className="rounded-md border border-[#dce7f2] bg-[#f8fbff] p-2.5">
-          <p className="text-[10px] font-medium uppercase tracking-wide text-[#90a3b6]">Question Range</p>
+          <p className="text-[10px] font-medium tracking-wide text-[#90a3b6] uppercase">
+            Question Range
+          </p>
           <p className="mt-1 text-sm font-semibold text-[#3f5f7a]">{rangeTxt}</p>
         </div>
         <div className="rounded-md border border-[#dce7f2] bg-[#f8fbff] p-2.5">
-          <p className="text-[10px] font-medium uppercase tracking-wide text-[#90a3b6]">Linked Tests</p>
+          <p className="text-[10px] font-medium tracking-wide text-[#90a3b6] uppercase">
+            Linked Tests
+          </p>
           <p className="mt-1 text-lg font-bold text-[#3f5f7a]">1</p>
         </div>
       </div>
 
       <div className="mt-3 rounded-md border border-[#dce7f2] bg-[#f8fbff] p-2.5">
-        <p className="text-[10px] font-medium uppercase tracking-wide text-[#90a3b6]">Category</p>
+        <p className="text-[10px] font-medium tracking-wide text-[#90a3b6] uppercase">Category</p>
         <p className="mt-1 text-sm font-semibold text-[#3f5f7a]">Semester 2025</p>
       </div>
 

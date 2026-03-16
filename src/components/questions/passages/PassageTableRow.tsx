@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
 import { type PassageRow, type PassageStatus } from "@/lib/passages-data";
-import { Eye, Pencil, Copy, Trash2, ImageIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Copy, Eye, ImageIcon, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 function statusClass(status: PassageStatus) {
@@ -30,7 +30,12 @@ export default function PassageTableRow({ row }: { row: PassageRow }) {
         )}
       </td>
       <td className="px-3 py-2.5">
-        <span className={cn("rounded-full border px-2 py-0.5 text-[10px] font-medium", statusClass(row.status))}>
+        <span
+          className={cn(
+            "rounded-full border px-2 py-0.5 text-[10px] font-medium",
+            statusClass(row.status)
+          )}
+        >
           {row.status}
         </span>
       </td>
@@ -39,7 +44,11 @@ export default function PassageTableRow({ row }: { row: PassageRow }) {
           <button type="button" title="View" className="text-[#9ab0c3] hover:text-[#4a93d9]">
             <Eye className="h-3.5 w-3.5" />
           </button>
-          <Link href="/questions/passages/add" title="Edit" className="text-[#9ab0c3] hover:text-[#3f5f7a]">
+          <Link
+            href="/questions/passages/add"
+            title="Edit"
+            className="text-[#9ab0c3] hover:text-[#3f5f7a]"
+          >
             <Pencil className="h-3.5 w-3.5" />
           </Link>
           <button type="button" title="Duplicate" className="text-[#9ab0c3] hover:text-[#7b6db5]">

@@ -2,9 +2,11 @@
 
 import { ChevronLeft, Copy, Eye, FileEdit, X } from "lucide-react";
 import Link from "next/link";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import AppPreviewCard from "./AppPreviewCard";
-import BasicPassageInformationSection, { type PassageStatus } from "./BasicPassageInformationSection";
+import BasicPassageInformationSection, {
+  type PassageStatus,
+} from "./BasicPassageInformationSection";
 import CriticalPassageRuleCard from "./CriticalPassageRuleCard";
 import LinkedQuestionRangeSection from "./LinkedQuestionRangeSection";
 import LinkQuestionsSection from "./LinkQuestionsSection";
@@ -58,8 +60,8 @@ export default function AddPassagePage() {
         <div>
           <h2 className="text-base font-semibold text-[#3f5f7a]">Add Passage</h2>
           <p className="text-xs text-[#7e95ab]">
-            Create a shared text or image block that can be linked to multiple questions without affecting question
-            numbering
+            Create a shared text or image block that can be linked to multiple questions without
+            affecting question numbering
           </p>
         </div>
       </div>

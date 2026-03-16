@@ -36,7 +36,9 @@ export default function LinkQuestionsSection({
           <span className="flex h-5 w-5 items-center justify-center rounded bg-[#d6eaf6] text-[10px] font-bold text-[#2f86d8]">
             Q
           </span>
-          <h3 className="text-sm font-semibold text-[#3f5f7a]">Link Questions from Question Bank</h3>
+          <h3 className="text-sm font-semibold text-[#3f5f7a]">
+            Link Questions from Question Bank
+          </h3>
         </div>
         <span className="rounded-full border border-[#d6eaf6] bg-[#eaf4fd] px-2 py-0.5 text-[10px] font-semibold text-[#2f86d8]">
           {linkedIds.size} linked
@@ -46,8 +48,8 @@ export default function LinkQuestionsSection({
       {/* Note */}
       <div className="mb-3 rounded-md border border-[#c8ddf2] bg-[#eaf4fd] p-2.5">
         <p className="text-xs text-[#4a7eb8]">
-          <strong>Note:</strong> Questions are imported from the Question Bank. The passage only connects to existing
-          questions — it does not create separate question records.
+          <strong>Note:</strong> Questions are imported from the Question Bank. The passage only
+          connects to existing questions — it does not create separate question records.
         </p>
       </div>
 

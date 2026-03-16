@@ -29,7 +29,9 @@ export default function AppPreviewCard({ linkedCount }: Props) {
           <div className="bg-white px-3 pb-3">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-[#e8eef4] py-2">
-              <span className="text-[9px] font-semibold text-[#3f5f7a]">Semi-Matura 2022 · Simulation</span>
+              <span className="text-[9px] font-semibold text-[#3f5f7a]">
+                Semi-Matura 2022 · Simulation
+              </span>
               <span className="rounded-full bg-[#fff3da] px-1.5 py-0.5 text-[7px] font-medium text-[#c48a2e]">
                 PREMIUM
               </span>

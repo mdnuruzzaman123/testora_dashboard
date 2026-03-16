@@ -141,7 +141,7 @@ export const linkableQuestions: LinkedQuestionForPassage[] = [
 export const passageEntityFields = [
   { label: "Passage ID", desc: "Unique identifier", detail: "e.g. PSG-01" },
   { label: "Passage Content", desc: "Text body (4 kb)", detail: "" },
-  { label: "Passage Image", desc: "Optional" , detail: "Stores an image" },
+  { label: "Passage Image", desc: "Optional", detail: "Stores an image" },
   { label: "Linked Question Range", desc: "", detail: "e.g. Q1–Q10" },
   { label: "Status", desc: "Active / Hide / Done", detail: "" },
 ];

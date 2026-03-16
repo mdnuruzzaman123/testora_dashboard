@@ -58,10 +58,12 @@ export default function LinkedQuestionRangeSection({ startOrder, endOrder, onCha
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-[#587189]">Linked Range Preview</label>
+          <label className="mb-1 block text-xs font-medium text-[#587189]">
+            Linked Range Preview
+          </label>
           <div className="flex h-9 items-center rounded-md border border-[#dce7f2] bg-[#f8fbff] px-3 text-sm text-[#90a3b6]">
             {preview ? (
-              <span className="text-[#c48a2e] font-medium">{preview.text}</span>
+              <span className="font-medium text-[#c48a2e]">{preview.text}</span>
             ) : (
               <span>Q1–Q10 (10 questions)</span>
             )}
@@ -78,7 +80,8 @@ export default function LinkedQuestionRangeSection({ startOrder, endOrder, onCha
           {preview && (
             <>
               {" "}
-              If linked range is Q{parseInt(startOrder)}–Q{parseInt(endOrder)}, the next real question is{" "}
+              If linked range is Q{parseInt(startOrder)}–Q{parseInt(endOrder)}, the next real
+              question is{" "}
               <span className="inline-flex items-center rounded-full bg-[#d6eaf6] px-1.5 py-0.5 text-[10px] font-semibold text-[#2f86d8]">
                 ✓ {preview.nextQ}
               </span>
