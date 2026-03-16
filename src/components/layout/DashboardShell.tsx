@@ -12,7 +12,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex min-h-dvh bg-[#f7f9fc] text-slate-700">
+    <div className="flex min-h-dvh bg-[#f4f8fc] text-[#4f6d87]">
       <DashboardSidebar open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <DashboardHeader onOpenSidebar={() => setMobileMenuOpen(true)} />

@@ -47,13 +47,13 @@ export default function Sidebar({ open = false, onClose }: SidebarProps) {
       />
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-slate-200 bg-[#d6e6f5] transition-transform lg:static lg:z-auto lg:w-56 lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-[#c9dbee] bg-[#d8e8f7] transition-transform lg:sticky lg:top-0 lg:z-auto lg:h-dvh lg:w-56 lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex items-center justify-between border-b border-[#c3d9ee] px-4 py-4">
+        <div className="flex items-center justify-between border-b border-[#c5d9ee] px-4 py-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md border border-[#aac8e3] bg-white text-[#2f86d8]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md border border-[#bad3ea] bg-white text-[#2f86d8]">
               <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" stroke="currentColor">
                 <path
                   d="M4 16L12 8L20 16"
@@ -65,15 +65,15 @@ export default function Sidebar({ open = false, onClose }: SidebarProps) {
               </svg>
             </div>
             <div>
-              <p className="text-[13px] font-semibold tracking-wide text-slate-700">TESTORA</p>
-              <p className="text-[10px] text-slate-500">Admin Panel</p>
+              <p className="text-[13px] font-semibold tracking-wide text-[#43627d]">TESTORA</p>
+              <p className="text-[10px] text-[#7087a0]">Admin Panel</p>
             </div>
           </div>
           <button
             type="button"
             aria-label="Close navigation"
             onClick={onClose}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-[#b9d2ea] bg-white text-slate-500 lg:hidden"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-[#b9d2ea] bg-white text-[#7087a0] lg:hidden"
           >
             <X className="h-4 w-4" />
           </button>
@@ -88,25 +88,31 @@ export default function Sidebar({ open = false, onClose }: SidebarProps) {
               className={cn(
                 "flex items-center gap-3 rounded-md border px-3 py-2 text-[13px] font-medium transition-colors",
                 isActive(item.href)
-                  ? "border-[#2f86d8] bg-[#2f86d8] text-white"
-                  : "border-transparent text-slate-600 hover:border-[#bfd6eb] hover:bg-[#edf4fb]"
+                  ? "border-[#bfd7ee] bg-[#edf4fb] text-[#2f86d8]"
+                  : "border-transparent text-[#557089] hover:border-[#bfd6eb] hover:bg-[#edf4fb] hover:text-[#3f5f7a]"
               )}
             >
+              <span
+                className={cn(
+                  "h-4 w-0.5 rounded-full",
+                  isActive(item.href) ? "bg-[#2f86d8]" : "bg-transparent"
+                )}
+              />
               <item.icon className="h-4 w-4 shrink-0" />
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="border-t border-[#c3d9ee] px-3 py-3">
+        <div className="border-t border-[#c5d9ee] px-3 py-3">
           <Link
             href="/settings"
             onClick={onClose}
             className={cn(
               "mb-1.5 flex items-center gap-3 rounded-md border px-3 py-2 text-[13px] font-medium transition-colors",
               isActive("/settings")
-                ? "border-[#2f86d8] bg-[#2f86d8] text-white"
-                : "border-transparent text-slate-600 hover:border-[#bfd6eb] hover:bg-[#edf4fb]"
+                ? "border-[#bfd7ee] bg-[#edf4fb] text-[#2f86d8]"
+                : "border-transparent text-[#557089] hover:border-[#bfd6eb] hover:bg-[#edf4fb] hover:text-[#3f5f7a]"
             )}
           >
             <Settings className="h-4 w-4 shrink-0" />
@@ -114,7 +120,7 @@ export default function Sidebar({ open = false, onClose }: SidebarProps) {
           </Link>
           <button
             type="button"
-            className="flex w-full items-center gap-3 rounded-md border border-transparent px-3 py-2 text-left text-[13px] font-medium text-slate-600 transition-colors hover:border-[#bfd6eb] hover:bg-[#edf4fb]"
+            className="flex w-full items-center gap-3 rounded-md border border-transparent px-3 py-2 text-left text-[13px] font-medium text-[#557089] transition-colors hover:border-[#bfd6eb] hover:bg-[#edf4fb] hover:text-[#3f5f7a]"
           >
             <LogOut className="h-4 w-4 shrink-0" />
             Log out
