@@ -1,11 +1,15 @@
 "use client";
 
 import { premiumSubscribersData } from "@/lib/premium-subscribers-data";
+import type { PremiumSubscription } from "@/types";
 import { Download, FileBarChart2, Info, X } from "lucide-react";
 import { useMemo, useState } from "react";
+import CancelSubscriptionModal from "./CancelSubscriptionModal";
+import ExtendSubscriptionModal from "./ExtendSubscriptionModal";
 import FiltersBar from "./FiltersBar";
 import PremiumSubscribersTable from "./PremiumSubscribersTable";
 import StatsCards, { type PremiumStats } from "./StatsCards";
+import SubscriptionDetailsModal from "./SubscriptionDetailsModal";
 
 const productOptions = [
   "All",
@@ -20,6 +24,7 @@ const statusOptions = ["All", "Active", "Expired", "Cancelled"];
 const expiringOptions = ["All", "Expiring Soon (30d)", "Expiring Soon (7d)"];
 
 export default function PremiumSubscribersPage() {
+  const [subscriptionsState, setSubscriptionsState] = useState(premiumSubscribersData);
   const [showBanner, setShowBanner] = useState(true);
   const [search, setSearch] = useState("");
   const [product, setProduct] = useState("All");
@@ -28,19 +33,22 @@ export default function PremiumSubscribersPage() {
   const [expiring, setExpiring] = useState("All");
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [viewingSub, setViewingSub] = useState<PremiumSubscription | null>(null);
+  const [extendingSub, setExtendingSub] = useState<PremiumSubscription | null>(null);
+  const [cancelingSub, setCancelingSub] = useState<PremiumSubscription | null>(null);
 
   const stats = useMemo<PremiumStats>(
     () => ({
-      active: premiumSubscribersData.filter((s) => s.status === "Active").length,
-      expiredThisMonth: premiumSubscribersData.filter((s) => s.status === "Expired").length,
-      cancelled: premiumSubscribersData.filter((s) => s.status === "Cancelled").length,
-      expiringSoon: premiumSubscribersData.filter((s) => s.expiringWarning === true).length,
+      active: subscriptionsState.filter((s) => s.status === "Active").length,
+      expiredThisMonth: subscriptionsState.filter((s) => s.status === "Expired").length,
+      cancelled: subscriptionsState.filter((s) => s.status === "Cancelled").length,
+      expiringSoon: subscriptionsState.filter((s) => s.expiringWarning === true).length,
     }),
-    []
+    [subscriptionsState]
   );
 
   const filteredSubscriptions = useMemo(() => {
-    return premiumSubscribersData.filter((s) => {
+    return subscriptionsState.filter((s) => {
       const query = search.trim().toLowerCase();
       const matchesSearch =
         query.length === 0 ||
@@ -59,7 +67,7 @@ export default function PremiumSubscribersPage() {
 
       return matchesSearch && matchesProduct && matchesPlan && matchesStatus && matchesExpiring;
     });
-  }, [search, product, plan, status, expiring]);
+  }, [subscriptionsState, search, product, plan, status, expiring]);
 
   const totalPages = Math.max(1, Math.ceil(filteredSubscriptions.length / rowsPerPage));
   const safePage = Math.min(page, totalPages);
@@ -72,6 +80,17 @@ export default function PremiumSubscribersPage() {
   const withReset = (fn: (v: string) => void) => (v: string) => {
     fn(v);
     setPage(1);
+  };
+
+  const addDays = (dateStr: string, days: number) => {
+    const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) return dateStr;
+    date.setDate(date.getDate() + days);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
   return (
@@ -163,6 +182,55 @@ export default function PremiumSubscribersPage() {
         onRowsPerPageChange={(rows) => {
           setRowsPerPage(rows);
           setPage(1);
+        }}
+        onViewSubscription={setViewingSub}
+        onExtendSubscription={setExtendingSub}
+        onCancelSubscription={setCancelingSub}
+      />
+
+      <SubscriptionDetailsModal
+        open={!!viewingSub}
+        sub={viewingSub}
+        onClose={() => setViewingSub(null)}
+      />
+
+      <ExtendSubscriptionModal
+        open={!!extendingSub}
+        sub={extendingSub}
+        onClose={() => setExtendingSub(null)}
+        onConfirm={(days) => {
+          if (!extendingSub) return;
+          setSubscriptionsState((prev) =>
+            prev.map((item) =>
+              item.id === extendingSub.id
+                ? {
+                    ...item,
+                    expiryDate: addDays(item.expiryDate, days),
+                    status: "Active",
+                    expiringWarning: false,
+                    daysRemaining: undefined,
+                  }
+                : item
+            )
+          );
+          setExtendingSub(null);
+        }}
+      />
+
+      <CancelSubscriptionModal
+        open={!!cancelingSub}
+        sub={cancelingSub}
+        onClose={() => setCancelingSub(null)}
+        onConfirm={() => {
+          if (!cancelingSub) return;
+          setSubscriptionsState((prev) =>
+            prev.map((item) =>
+              item.id === cancelingSub.id
+                ? { ...item, status: "Cancelled", expiringWarning: false, daysRemaining: undefined }
+                : item
+            )
+          );
+          setCancelingSub(null);
         }}
       />
     </div>

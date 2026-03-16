@@ -126,7 +126,7 @@ export const premiumByProductByYear: Record<DashboardYear, ProductPoint[]> = {
     { label: "Law", value: 1430, color: "#8fbde5" },
     { label: "Economics", value: 1300, color: "#8fbde5" },
     { label: "Semimatura", value: 1180, color: "#8fbde5" },
-    { label: "Other Focuses", value: 900, color: "#8fbde5" },
+    { label: "Other Faculties", value: 900, color: "#8fbde5" },
     { label: "Architecture", value: 510, color: "#8fbde5" },
   ],
   2025: [
@@ -135,7 +135,7 @@ export const premiumByProductByYear: Record<DashboardYear, ProductPoint[]> = {
     { label: "Law", value: 1610, color: "#8fbde5" },
     { label: "Economics", value: 1470, color: "#8fbde5" },
     { label: "Semimatura", value: 1320, color: "#8fbde5" },
-    { label: "Other Focuses", value: 1030, color: "#8fbde5" },
+    { label: "Other Faculties", value: 1030, color: "#8fbde5" },
     { label: "Architecture", value: 620, color: "#8fbde5" },
   ],
   2026: [
@@ -144,7 +144,7 @@ export const premiumByProductByYear: Record<DashboardYear, ProductPoint[]> = {
     { label: "Law", value: 1740, color: "#8fbde5" },
     { label: "Economics", value: 1560, color: "#8fbde5" },
     { label: "Semimatura", value: 1420, color: "#8fbde5" },
-    { label: "Other Focuses", value: 1120, color: "#8fbde5" },
+    { label: "Other Faculties", value: 1120, color: "#8fbde5" },
     { label: "Architecture", value: 680, color: "#8fbde5" },
   ],
 };
@@ -195,7 +195,7 @@ export const salesBreakdownByYear: Record<DashboardYear, SalesBreakdown[]> = {
     { label: "Law", amount: "$10,490", users: "1,430", change: "+9.0%" },
     { label: "Economics", amount: "$9,280", users: "1,300", change: "+8.5%" },
     { label: "Semimatura", amount: "$8,240", users: "1,180", change: "+7.6%" },
-    { label: "Other Focuses", amount: "$5,430", users: "900", change: "+6.3%" },
+    { label: "Other Faculties", amount: "$5,430", users: "900", change: "+6.3%" },
     { label: "Architecture", amount: "$4,320", users: "510", change: "+5.2%" },
   ],
   2025: [
@@ -204,7 +204,7 @@ export const salesBreakdownByYear: Record<DashboardYear, SalesBreakdown[]> = {
     { label: "Law", amount: "$11,540", users: "1,610", change: "+12.0%" },
     { label: "Economics", amount: "$10,260", users: "1,470", change: "+10.6%" },
     { label: "Semimatura", amount: "$9,060", users: "1,320", change: "+9.4%" },
-    { label: "Other Focuses", amount: "$6,120", users: "1,030", change: "+8.2%" },
+    { label: "Other Faculties", amount: "$6,120", users: "1,030", change: "+8.2%" },
     { label: "Architecture", amount: "$4,820", users: "620", change: "+7.0%" },
   ],
   2026: [
@@ -213,7 +213,7 @@ export const salesBreakdownByYear: Record<DashboardYear, SalesBreakdown[]> = {
     { label: "Law", amount: "$12,120", users: "1,740", change: "+14.4%" },
     { label: "Economics", amount: "$11,410", users: "1,560", change: "+11.9%" },
     { label: "Semimatura", amount: "$9,890", users: "1,420", change: "+10.6%" },
-    { label: "Other Focuses", amount: "$6,950", users: "1,120", change: "+8.1%" },
+    { label: "Other Faculties", amount: "$6,950", users: "1,120", change: "+8.1%" },
     { label: "Architecture", amount: "$5,141", users: "680", change: "+7.1%" },
   ],
 };

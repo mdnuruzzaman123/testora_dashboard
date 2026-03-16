@@ -8,6 +8,10 @@ type UsersTableProps = {
   rowsPerPage: number;
   onPageChange: (page: number) => void;
   onRowsPerPageChange: (rows: number) => void;
+  onViewUser: (user: UserManagementRow) => void;
+  onSuspendUser: (user: UserManagementRow) => void;
+  onDeactivateUser: (user: UserManagementRow) => void;
+  onArchiveUser: (user: UserManagementRow) => void;
 };
 
 export default function UsersTable({
@@ -17,6 +21,10 @@ export default function UsersTable({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
+  onViewUser,
+  onSuspendUser,
+  onDeactivateUser,
+  onArchiveUser,
 }: UsersTableProps) {
   return (
     <section className="overflow-hidden rounded-lg border border-[#dce7f2] bg-white">
@@ -36,7 +44,14 @@ export default function UsersTable({
 
           <tbody>
             {users.map((user) => (
-              <UserRow key={user.id} user={user} />
+              <UserRow
+                key={user.id}
+                user={user}
+                onView={onViewUser}
+                onSuspend={onSuspendUser}
+                onDeactivate={onDeactivateUser}
+                onArchive={onArchiveUser}
+              />
             ))}
           </tbody>
         </table>

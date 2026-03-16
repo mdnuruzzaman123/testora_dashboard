@@ -17,7 +17,7 @@ export default function SettingsPage() {
   const [passwords, setPasswords] = useState(passwordFormDefaults);
 
   return (
-    <div className="rounded-lg bg-[#e5e6e8] p-4 md:p-10">
+    <div className="rounded-lg border border-[#dce7f2] bg-[#e5e6e8] p-4 md:p-10">
       <div className="mx-auto w-full max-w-230">
         <div className="rounded-2xl bg-linear-to-r from-[#4a9bd7] to-[#4398dc] px-5 py-4">
           <div className="flex items-center justify-center gap-4">
@@ -37,16 +37,14 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <p className="text-[42px] leading-none font-semibold text-white">
-                {adminProfile.name}
-              </p>
-              <p className="mt-1 text-[34px] leading-none text-[#deecfa]">{adminProfile.role}</p>
+              <p className="text-5xl leading-none font-semibold text-white">{adminProfile.name}</p>
+              <p className="mt-1 text-2xl leading-none text-[#deecfa]">{adminProfile.role}</p>
             </div>
           </div>
         </div>
 
         <div className="mx-auto mt-8 max-w-135">
-          <div className="mb-6 flex items-center justify-center gap-8 text-xl">
+          <div className="mb-6 flex items-center justify-center gap-8 text-[28px]">
             <button
               type="button"
               onClick={() => setActiveTab("edit")}
@@ -76,11 +74,11 @@ export default function SettingsPage() {
           {activeTab === "edit" ? (
             <form className="space-y-4">
               <div className="text-center">
-                <h2 className="text-[38px] font-semibold text-[#111111]">Edit Your Profile</h2>
+                <h2 className="text-4xl font-semibold text-[#2f3f52]">Edit Your Profile</h2>
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-medium text-[#111111]">User Name</label>
+                <label className="text-sm font-medium text-[#4f6d87]">User Name</label>
                 <input
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -98,11 +96,11 @@ export default function SettingsPage() {
           ) : (
             <form className="space-y-4">
               <div className="text-center">
-                <h2 className="text-[38px] font-semibold text-[#111111]">Change Password</h2>
+                <h2 className="text-4xl font-semibold text-[#2f3f52]">Change Password</h2>
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-medium text-[#111111]">Current Password</label>
+                <label className="text-sm font-medium text-[#4f6d87]">Current Password</label>
                 <input
                   type="password"
                   value={passwords.currentPassword}
@@ -114,7 +112,7 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-medium text-[#111111]">New Password</label>
+                <label className="text-sm font-medium text-[#4f6d87]">New Password</label>
                 <input
                   type="password"
                   value={passwords.newPassword}
@@ -126,7 +124,7 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-medium text-[#111111]">Confirm New Password</label>
+                <label className="text-sm font-medium text-[#4f6d87]">Confirm New Password</label>
                 <input
                   type="password"
                   value={passwords.confirmPassword}

@@ -1,7 +1,8 @@
 import StatusBadge from "@/components/users/StatusBadge";
 import { cn } from "@/lib/utils";
 import type { UserStatus } from "@/types";
-import { MoreHorizontal } from "lucide-react";
+import { Archive, Ban, Eye, MoreHorizontal, UserX } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 export type UserManagementRow = {
   id: string;
@@ -18,6 +19,10 @@ export type UserManagementRow = {
 
 type UserRowProps = {
   user: UserManagementRow;
+  onView: (user: UserManagementRow) => void;
+  onSuspend: (user: UserManagementRow) => void;
+  onDeactivate: (user: UserManagementRow) => void;
+  onArchive: (user: UserManagementRow) => void;
 };
 
 function badgeClass(value: string, kind: "category" | "plan") {
@@ -33,7 +38,27 @@ function badgeClass(value: string, kind: "category" | "plan") {
   return "border-[#dbe7f4] bg-[#edf4fd] text-[#5f88bd]";
 }
 
-export default function UserRow({ user }: UserRowProps) {
+export default function UserRow({
+  user,
+  onView,
+  onSuspend,
+  onDeactivate,
+  onArchive,
+}: UserRowProps) {
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   return (
     <tr className="border-b border-[#ecf2f8] text-xs text-[#5e768e] last:border-b-0">
       <td className="px-4 py-3 sm:px-5">
@@ -73,13 +98,65 @@ export default function UserRow({ user }: UserRowProps) {
         <StatusBadge status={user.status} />
       </td>
       <td className="px-4 py-3 text-right sm:px-5">
-        <button
-          type="button"
-          aria-label="Open row actions"
-          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-transparent text-[#7f95aa] hover:border-[#dce7f2] hover:bg-[#f8fbff]"
-        >
-          <MoreHorizontal className="h-4 w-4" />
-        </button>
+        <div ref={menuRef} className="relative inline-flex">
+          <button
+            type="button"
+            aria-label="Open row actions"
+            onClick={() => setOpen((v) => !v)}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-transparent text-[#7f95aa] hover:border-[#dce7f2] hover:bg-[#f8fbff]"
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </button>
+
+          {open && (
+            <div className="absolute top-8 right-0 z-20 w-52 rounded-xl border border-[#dce7f2] bg-white py-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  onView(user);
+                  setOpen(false);
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#4f6d87] hover:bg-[#f8fbff]"
+              >
+                <Eye className="h-4 w-4 text-[#8fa2b5]" />
+                View User
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onSuspend(user);
+                  setOpen(false);
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#e24d4d] hover:bg-[#fff5f5]"
+              >
+                <Ban className="h-4 w-4" />
+                Suspend User
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onDeactivate(user);
+                  setOpen(false);
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#d58023] hover:bg-[#fffaf0]"
+              >
+                <UserX className="h-4 w-4" />
+                Deactivate User
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onArchive(user);
+                  setOpen(false);
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#6f8194] hover:bg-[#f8fbff]"
+              >
+                <Archive className="h-4 w-4" />
+                Archive User
+              </button>
+            </div>
+          )}
+        </div>
       </td>
     </tr>
   );

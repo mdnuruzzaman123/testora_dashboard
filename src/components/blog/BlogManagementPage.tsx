@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import ArticleTableRow from "./ArticleTableRow";
+import ManageCategoriesModal from "./ManageCategoriesModal";
 
 // ─── Stat card ────────────────────────────────────────────────────────────────
 
@@ -51,6 +52,7 @@ export default function BlogManagementPage() {
   const [articleList, setArticleList] = useState(initialArticles);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [showCategoriesModal, setShowCategoriesModal] = useState(false);
 
   const handleStatusChange = (id: string, status: ArticleStatus) => {
     setArticleList((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
@@ -88,6 +90,7 @@ export default function BlogManagementPage() {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => setShowCategoriesModal(true)}
             className="inline-flex h-9 items-center gap-1.5 rounded-md border border-[#dce7f2] bg-white px-3 text-xs font-medium text-[#587189] hover:bg-[#f3f7fb]"
           >
             <Tag className="h-3.5 w-3.5" />
@@ -259,6 +262,12 @@ export default function BlogManagementPage() {
           </span>
         </div>
       </div>
+
+      <ManageCategoriesModal
+        open={showCategoriesModal}
+        articles={articleList}
+        onClose={() => setShowCategoriesModal(false)}
+      />
     </div>
   );
 }

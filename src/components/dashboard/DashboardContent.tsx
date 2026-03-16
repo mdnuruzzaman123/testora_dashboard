@@ -67,36 +67,24 @@ function getStatusClass(status: "Active" | "Suspended") {
     : "bg-[#fdeeee] text-[#db6f6f] border-[#f4d7d7]";
 }
 
-function SalesSnapshot({
-  years,
-  year,
-  onYearChange,
-}: {
-  years: readonly DashboardYear[];
-  year: DashboardYear;
-  onYearChange: (year: DashboardYear) => void;
-}) {
+function SalesSnapshot({ year }: { year: DashboardYear }) {
   const chartData = premiumByProductByYear[year];
   const rows = salesBreakdownByYear[year];
+  const totalUsers = chartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <Surface className="p-4 sm:p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-[#3f5f7a]">Plans / Sales Snapshot</h3>
-          <p className="text-xs text-[#8ea1b4]">Active subscriptions by product</p>
+          <p className="text-xs text-[#8ea1b4]">
+            Active subscriptions by product — {totalUsers.toLocaleString()} total
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <YearSelect
-            years={[...years]}
-            value={year}
-            onChange={(v) => onYearChange(v as DashboardYear)}
-          />
-          <button className="text-xs font-medium text-[#2f86d8]">Sales Report</button>
-        </div>
+        <button className="text-xs font-medium text-[#2f86d8]">Sales Report ↗</button>
       </div>
       <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
-        <DashboardHorizontalBarChart data={chartData} height={258} />
+        <DashboardHorizontalBarChart data={chartData} height={258} showXAxisTicks />
         <div className="space-y-2.5 rounded-md border border-[#dce7f2] p-3">
           <p className="text-[11px] font-semibold tracking-wide text-[#90a2b5] uppercase">
             Product Breakdown
@@ -124,8 +112,8 @@ function SalesSnapshot({
 export default function DashboardContent() {
   const [growthYear, setGrowthYear] = useState<DashboardYear>(2026);
   const [productYear, setProductYear] = useState<DashboardYear>(2026);
-  const [categoryYear, setCategoryYear] = useState<DashboardYear>(2026);
-  const [salesYear, setSalesYear] = useState<DashboardYear>(2026);
+  const categoryYear: DashboardYear = 2026;
+  const salesYear: DashboardYear = 2026;
 
   const years = dashboardYears;
   const AlertIcon = alertIcon;
@@ -176,16 +164,50 @@ export default function DashboardContent() {
               onChange={(value) => setProductYear(value as DashboardYear)}
             />
           </div>
-          <DashboardHorizontalBarChart data={premiumByProductByYear[productYear]} height={228} />
-          <div className="mt-3 grid gap-2 sm:grid-cols-3">
-            {premiumHighlightsByYear[productYear].map((item) => (
+          <div className="mb-2 inline-flex rounded-sm bg-[#edf4ff] px-1.5 py-0.5 text-[10px] text-[#2f86d8]">
+            {premiumByProductByYear[productYear]
+              .reduce((sum, item) => sum + item.value, 0)
+              .toLocaleString()}{" "}
+            total premium users
+          </div>
+          <DashboardHorizontalBarChart data={premiumByProductByYear[productYear]} height={200} />
+
+          <div className="mt-2 flex items-center justify-between text-[10px] text-[#90a2b5]">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#2f86d8]" /> Top product
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#9ec6ea]" /> Other products
+              </span>
+            </div>
+            <span>General Exams • Province Pranuese</span>
+          </div>
+
+          <p className="mt-3 text-[10px] tracking-wide text-[#9aabbc] uppercase">Quick Insights</p>
+          <div className="mt-1 grid gap-2 sm:grid-cols-3">
+            {premiumHighlightsByYear[productYear].map((item, idx) => (
               <div
                 key={item.title}
-                className="rounded-md border border-[#dce7f2] bg-[#f9fbfe] p-2.5"
+                className={cn(
+                  "rounded-lg border p-2.5",
+                  idx === 0
+                    ? "border-[#cfdcf0] bg-[#eef4ff]"
+                    : idx === 1
+                      ? "border-[#d1e9df] bg-[#edf8f3]"
+                      : "border-[#f1dfc1] bg-[#fff5e8]"
+                )}
               >
-                <p className="text-[10px] tracking-wide text-[#90a2b5] uppercase">{item.title}</p>
-                <p className="mt-0.5 text-sm font-semibold text-[#3f5f7a]">{item.value}</p>
-                <p className="text-[11px] text-[#90a2b5]">{item.sub}</p>
+                <p
+                  className={cn(
+                    "text-[10px] font-semibold tracking-wide uppercase",
+                    idx === 0 ? "text-[#4d79bb]" : idx === 1 ? "text-[#3ea666]" : "text-[#cf8d34]"
+                  )}
+                >
+                  {item.title}
+                </p>
+                <p className="mt-0.5 text-xs font-semibold text-[#3f5f7a]">{item.value}</p>
+                <p className="text-[10px] text-[#8da1b5]">{item.sub}</p>
               </div>
             ))}
           </div>
@@ -339,24 +361,17 @@ export default function DashboardContent() {
                 <h4 className="text-sm font-semibold text-[#3f5f7a]">Most Used Category</h4>
                 <p className="text-xs text-[#8ea1b4]">Study category distribution</p>
               </div>
-              <div className="flex items-center gap-2">
-                <YearSelect
-                  years={[...years]}
-                  value={categoryYear}
-                  onChange={(value) => setCategoryYear(value as DashboardYear)}
-                />
-                <CircleAlert className="h-4 w-4 text-[#a8b7c6]" />
-              </div>
+              <CircleAlert className="h-4 w-4 text-[#a8b7c6]" />
             </div>
             <DashboardDonutChart data={categoryShareByYear[categoryYear]} />
             <div className="mt-3 rounded-md border border-[#dce9f8] bg-[#f1f7fd] px-3 py-2 text-[11px] text-[#2f86d8]">
-              Most used this year: {topCategory.label}
+              Most used this month: {topCategory.label}
             </div>
           </div>
         </div>
       </Surface>
 
-      <SalesSnapshot years={years} year={salesYear} onYearChange={setSalesYear} />
+      <SalesSnapshot year={salesYear} />
     </div>
   );
 }

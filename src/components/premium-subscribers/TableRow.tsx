@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import type { PremiumSubscription } from "@/types";
-import { Clock, MoreHorizontal } from "lucide-react";
+import { CalendarPlus, Clock, Eye, MoreHorizontal, XCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import SubscriptionStatusBadge from "./SubscriptionStatusBadge";
 
 const productBadgeClass: Record<string, string> = {
@@ -26,7 +27,28 @@ const paymentBadgeClass: Record<string, string> = {
 
 const fallbackBadge = "border-[#dee8f2] bg-[#f2f6fb] text-[#6d839a]";
 
-export default function TableRow({ sub }: { sub: PremiumSubscription }) {
+type Props = {
+  sub: PremiumSubscription;
+  onView: (sub: PremiumSubscription) => void;
+  onExtend: (sub: PremiumSubscription) => void;
+  onCancel: (sub: PremiumSubscription) => void;
+};
+
+export default function TableRow({ sub, onView, onExtend, onCancel }: Props) {
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   return (
     <tr className="border-b border-[#ecf2f8] text-xs text-[#5e768e] last:border-b-0">
       {/* User */}
@@ -105,13 +127,54 @@ export default function TableRow({ sub }: { sub: PremiumSubscription }) {
 
       {/* Actions */}
       <td className="px-4 py-3 sm:px-5">
-        <button
-          type="button"
-          aria-label="Open row actions"
-          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-transparent text-[#7f95aa] hover:border-[#dce7f2] hover:bg-[#f8fbff]"
-        >
-          <MoreHorizontal className="h-4 w-4" />
-        </button>
+        <div ref={menuRef} className="relative inline-flex">
+          <button
+            type="button"
+            aria-label="Open row actions"
+            onClick={() => setOpen((v) => !v)}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-transparent text-[#7f95aa] hover:border-[#dce7f2] hover:bg-[#f8fbff]"
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </button>
+
+          {open && (
+            <div className="absolute top-8 right-0 z-20 w-48 rounded-xl border border-[#dce7f2] bg-white py-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  onView(sub);
+                  setOpen(false);
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#4f6d87] hover:bg-[#f8fbff]"
+              >
+                <Eye className="h-4 w-4 text-[#8fa2b5]" />
+                View Subscription
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onExtend(sub);
+                  setOpen(false);
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#3571d5] hover:bg-[#f3f8ff]"
+              >
+                <CalendarPlus className="h-4 w-4" />
+                Extend Subscription
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onCancel(sub);
+                  setOpen(false);
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#e24d4d] hover:bg-[#fff5f5]"
+              >
+                <XCircle className="h-4 w-4" />
+                Cancel Subscription
+              </button>
+            </div>
+          )}
+        </div>
       </td>
     </tr>
   );

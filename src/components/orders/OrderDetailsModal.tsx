@@ -11,7 +11,7 @@ type Props = {
   onClose: () => void;
 };
 
-const sectionTitleClass = "mb-3 text-[32px] font-semibold leading-none text-[#2f3f52]";
+const sectionTitleClass = "mb-3 text-3xl font-semibold leading-none text-[#2f3f52]";
 
 function currency(value: number) {
   return "EUR " + value.toFixed(2);
@@ -25,7 +25,7 @@ export default function OrderDetailsModal({ order, open, onClose }: Props) {
       <div className="w-full max-w-4xl rounded-2xl border border-[#dce7f2] bg-white">
         <div className="flex items-start justify-between border-b border-[#e6edf5] px-6 py-5">
           <div>
-            <h2 className="text-[38px] leading-none font-semibold text-[#2f3f52]">Order Details</h2>
+            <h2 className="text-4xl leading-none font-semibold text-[#2f3f52]">Order Details</h2>
             <p className="mt-1 text-xs text-[#8ba0b4]">{order.id}</p>
           </div>
           <button
@@ -62,7 +62,7 @@ export default function OrderDetailsModal({ order, open, onClose }: Props) {
               </div>
               <div className="mt-1 flex items-center justify-between border-t border-[#c9dcf1] pt-2">
                 <span className="text-xl font-medium">Total Amount</span>
-                <span className="text-[32px] font-semibold text-[#2f86d8]">
+                <span className="text-4xl font-semibold text-[#2f86d8]">
                   {currency(order.totalAmount)}
                 </span>
               </div>
@@ -126,6 +126,11 @@ export default function OrderDetailsModal({ order, open, onClose }: Props) {
           <section className="rounded-xl border border-[#dce7f2] bg-white p-4">
             <h3 className={sectionTitleClass}>Ordered Items</h3>
             <div className="space-y-2">
+              {order.items.length === 0 && (
+                <div className="rounded-lg border border-[#ebf1f8] bg-[#f7fafd] px-3 py-3 text-sm text-[#8fa2b5]">
+                  No line items available.
+                </div>
+              )}
               {order.items.map((item) => (
                 <div
                   key={item.id}
@@ -144,7 +149,7 @@ export default function OrderDetailsModal({ order, open, onClose }: Props) {
                       </p>
                     </div>
                   </div>
-                  <p className="text-2xl font-medium text-[#445a73]">
+                  <p className="text-xl font-medium text-[#445a73]">
                     {currency(item.quantity * item.unitPrice)}
                   </p>
                 </div>
@@ -198,13 +203,13 @@ export default function OrderDetailsModal({ order, open, onClose }: Props) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-[#d4e2ef] px-4 py-2 text-lg text-[#556f88] hover:bg-[#f5f9fd]"
+            className="rounded-xl border border-[#d4e2ef] px-4 py-2 text-sm text-[#556f88] hover:bg-[#f5f9fd]"
           >
             Close
           </button>
           <button
             type="button"
-            className="rounded-xl bg-[#2f86d8] px-4 py-2 text-lg font-medium text-white hover:bg-[#2a78c6]"
+            className="rounded-xl bg-[#2f86d8] px-4 py-2 text-sm font-medium text-white hover:bg-[#2a78c6]"
           >
             Update Status
           </button>

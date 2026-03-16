@@ -9,6 +9,9 @@ type PremiumSubscribersTableProps = {
   rowsPerPage: number;
   onPageChange: (page: number) => void;
   onRowsPerPageChange: (rows: number) => void;
+  onViewSubscription: (sub: PremiumSubscription) => void;
+  onExtendSubscription: (sub: PremiumSubscription) => void;
+  onCancelSubscription: (sub: PremiumSubscription) => void;
 };
 
 export default function PremiumSubscribersTable({
@@ -18,6 +21,9 @@ export default function PremiumSubscribersTable({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
+  onViewSubscription,
+  onExtendSubscription,
+  onCancelSubscription,
 }: PremiumSubscribersTableProps) {
   return (
     <section className="overflow-hidden rounded-lg border border-[#dce7f2] bg-white">
@@ -39,7 +45,13 @@ export default function PremiumSubscribersTable({
 
           <tbody>
             {subscriptions.map((sub) => (
-              <TableRow key={sub.id} sub={sub} />
+              <TableRow
+                key={sub.id}
+                sub={sub}
+                onView={onViewSubscription}
+                onExtend={onExtendSubscription}
+                onCancel={onCancelSubscription}
+              />
             ))}
             {subscriptions.length === 0 && (
               <tr>
