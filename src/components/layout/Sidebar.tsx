@@ -88,16 +88,10 @@ export default function Sidebar({ open = false, onClose }: SidebarProps) {
               className={cn(
                 "flex items-center gap-3 rounded-md border px-3 py-2 text-[13px] font-medium transition-colors",
                 isActive(item.href)
-                  ? "border-[#bfd7ee] bg-[#edf4fb] text-[#2f86d8]"
+                  ? "border-[#bfd7ee] bg-[#2f86d8] text-white"
                   : "border-transparent text-[#557089] hover:border-[#bfd6eb] hover:bg-[#edf4fb] hover:text-[#3f5f7a]"
               )}
             >
-              <span
-                className={cn(
-                  "h-4 w-0.5 rounded-full",
-                  isActive(item.href) ? "bg-[#2f86d8]" : "bg-transparent"
-                )}
-              />
               <item.icon className="h-4 w-4 shrink-0" />
               {item.label}
             </Link>
@@ -111,7 +105,7 @@ export default function Sidebar({ open = false, onClose }: SidebarProps) {
             className={cn(
               "mb-1.5 flex items-center gap-3 rounded-md border px-3 py-2 text-[13px] font-medium transition-colors",
               isActive("/settings")
-                ? "border-[#bfd7ee] bg-[#edf4fb] text-[#2f86d8]"
+                ? "border-[#bfd7ee] bg-[#2f86d8] text-white"
                 : "border-transparent text-[#557089] hover:border-[#bfd6eb] hover:bg-[#edf4fb] hover:text-[#3f5f7a]"
             )}
           >
