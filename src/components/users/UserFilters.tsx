@@ -1,0 +1,100 @@
+import { Download, Search } from "lucide-react";
+
+type UserFiltersProps = {
+  search: string;
+  onSearchChange: (value: string) => void;
+  category: string;
+  onCategoryChange: (value: string) => void;
+  type: string;
+  onTypeChange: (value: string) => void;
+  plan: string;
+  onPlanChange: (value: string) => void;
+  status: string;
+  onStatusChange: (value: string) => void;
+  categories: string[];
+  types: string[];
+  plans: string[];
+  statuses: string[];
+};
+
+function FilterSelect({
+  value,
+  onChange,
+  options,
+  label,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  options: string[];
+  label: string;
+}) {
+  return (
+    <label className="inline-flex min-w-[130px] items-center gap-1 rounded-md border border-[#dce7f2] bg-[#f8fbff] px-2.5 py-1.5 text-xs text-[#587189]">
+      <span>{label}:</span>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="min-w-0 bg-transparent text-xs font-medium text-[#3f5f7a] outline-none"
+      >
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+export default function UserFilters(props: UserFiltersProps) {
+  return (
+    <div className="rounded-lg border border-[#dce7f2] bg-white p-3">
+      <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-1 flex-col gap-2 md:flex-row md:flex-wrap md:items-center">
+          <label className="relative block w-full md:max-w-[270px]">
+            <Search className="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-[#9ab0c3]" />
+            <input
+              value={props.search}
+              onChange={(event) => props.onSearchChange(event.target.value)}
+              placeholder="Search by name or email..."
+              className="h-9 w-full rounded-md border border-[#dce7f2] bg-[#f8fbff] pr-3 pl-8 text-sm text-[#3f5f7a] outline-none placeholder:text-[#9ab0c3]"
+            />
+          </label>
+
+          <FilterSelect
+            value={props.category}
+            onChange={props.onCategoryChange}
+            options={props.categories}
+            label="Category"
+          />
+          <FilterSelect
+            value={props.type}
+            onChange={props.onTypeChange}
+            options={props.types}
+            label="Type"
+          />
+          <FilterSelect
+            value={props.plan}
+            onChange={props.onPlanChange}
+            options={props.plans}
+            label="Plan"
+          />
+          <FilterSelect
+            value={props.status}
+            onChange={props.onStatusChange}
+            options={props.statuses}
+            label="Status"
+          />
+        </div>
+
+        <button
+          type="button"
+          className="inline-flex h-9 items-center justify-center gap-1 rounded-md border border-[#dce7f2] bg-[#f8fbff] px-3 text-xs font-medium text-[#3f5f7a]"
+        >
+          <Download className="h-3.5 w-3.5" />
+          Export CSV
+        </button>
+      </div>
+    </div>
+  );
+}
