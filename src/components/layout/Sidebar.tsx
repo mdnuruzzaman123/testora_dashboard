@@ -20,7 +20,7 @@ const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutGrid },
   { href: "/users", label: "User Management", icon: Users },
   { href: "/premium-users", label: "Premium Users", icon: Crown },
-  { href: "/questions", label: "Question & Test Section", icon: CircleHelp },
+  { href: "/questions", label: "Question & Test", icon: CircleHelp },
   { href: "/blog", label: "Blog", icon: FileText },
   { href: "/marketplace", label: "Marketplace", icon: ShoppingBag },
   { href: "/orders", label: "Order", icon: Package },

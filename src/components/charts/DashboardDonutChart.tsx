@@ -17,7 +17,7 @@ export default function DashboardDonutChart({ data }: DashboardDonutChartProps) 
 
   return (
     <div className="grid gap-4 md:grid-cols-[180px_1fr]">
-      <div className="relative mx-auto h-[160px] w-[160px]">
+      <div className="relative mx-auto size-40 shrink-0">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
