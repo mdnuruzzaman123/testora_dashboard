@@ -1,19 +1,20 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
-  LayoutGrid,
-  Users,
-  Crown,
   CircleHelp,
+  Crown,
   FileText,
-  ShoppingBag,
+  LayoutGrid,
+  LogOut,
   Package,
   Settings,
-  LogOut,
+  ShoppingBag,
+  Users,
+  X,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutGrid },
@@ -25,75 +26,101 @@ const navItems = [
   { href: "/orders", label: "Order", icon: Package },
 ];
 
-export default function Sidebar() {
+type SidebarProps = {
+  open?: boolean;
+  onClose?: () => void;
+};
+
+export default function Sidebar({ open = false, onClose }: SidebarProps) {
   const pathname = usePathname();
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
   return (
-    <aside className="flex h-screen w-52 shrink-0 flex-col border-r border-gray-200 bg-white">
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 px-4 py-5">
-        <div className="from-primary to-primary2 flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br shadow-sm">
-          {/* Testora rocket/arrow mark */}
-          <svg
-            className="h-5 w-5 text-white"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+    <>
+      <div
+        onClick={onClose}
+        className={cn(
+          "fixed inset-0 z-30 bg-slate-900/30 transition-opacity lg:hidden",
+          open ? "opacity-100" : "pointer-events-none opacity-0"
+        )}
+      />
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-slate-200 bg-[#d6e6f5] transition-transform lg:static lg:z-auto lg:w-56 lg:translate-x-0",
+          open ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <div className="flex items-center justify-between border-b border-[#c3d9ee] px-4 py-4">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md border border-[#aac8e3] bg-white text-[#2f86d8]">
+              <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" stroke="currentColor">
+                <path
+                  d="M4 16L12 8L20 16"
+                  strokeWidth="1.9"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path d="M8 16H16" strokeWidth="1.9" strokeLinecap="round" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-[13px] font-semibold tracking-wide text-slate-700">TESTORA</p>
+              <p className="text-[10px] text-slate-500">Admin Panel</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            aria-label="Close navigation"
+            onClick={onClose}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-[#b9d2ea] bg-white text-slate-500 lg:hidden"
           >
-            <path d="M12 2L12 22M12 2L6 8M12 2L18 8" />
-          </svg>
+            <X className="h-4 w-4" />
+          </button>
         </div>
-        <span className="text-[15px] font-extrabold tracking-widest text-gray-900">TESTORA</span>
-      </div>
 
-      {/* Nav */}
-      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-1">
-        {navItems.map((item) => (
+        <nav className="flex flex-1 flex-col gap-1 px-3 py-3">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onClose}
+              className={cn(
+                "flex items-center gap-3 rounded-md border px-3 py-2 text-[13px] font-medium transition-colors",
+                isActive(item.href)
+                  ? "border-[#2f86d8] bg-[#2f86d8] text-white"
+                  : "border-transparent text-slate-600 hover:border-[#bfd6eb] hover:bg-[#edf4fb]"
+              )}
+            >
+              <item.icon className="h-4 w-4 shrink-0" />
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="border-t border-[#c3d9ee] px-3 py-3">
           <Link
-            key={item.href}
-            href={item.href}
+            href="/settings"
+            onClick={onClose}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-              isActive(item.href)
-                ? "bg-blue-600 text-white"
-                : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+              "mb-1.5 flex items-center gap-3 rounded-md border px-3 py-2 text-[13px] font-medium transition-colors",
+              isActive("/settings")
+                ? "border-[#2f86d8] bg-[#2f86d8] text-white"
+                : "border-transparent text-slate-600 hover:border-[#bfd6eb] hover:bg-[#edf4fb]"
             )}
           >
-            <item.icon className="size-4.25 shrink-0" />
-            {item.label}
+            <Settings className="h-4 w-4 shrink-0" />
+            Settings
           </Link>
-        ))}
-      </nav>
-
-      {/* Bottom */}
-      <div className="border-t border-gray-100 px-2 py-3">
-        <Link
-          href="/settings"
-          className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-            isActive("/settings")
-              ? "bg-blue-600 text-white"
-              : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-          )}
-        >
-          <Settings className="size-4.25 shrink-0" />
-          Settings
-        </Link>
-        <button
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
-          onClick={() => {
-            /* TODO: handle logout / dispatch logout action */
-          }}
-        >
-          <LogOut className="size-4.25 shrink-0" />
-          Log out
-        </button>
-      </div>
-    </aside>
+          <button
+            type="button"
+            className="flex w-full items-center gap-3 rounded-md border border-transparent px-3 py-2 text-left text-[13px] font-medium text-slate-600 transition-colors hover:border-[#bfd6eb] hover:bg-[#edf4fb]"
+          >
+            <LogOut className="h-4 w-4 shrink-0" />
+            Log out
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

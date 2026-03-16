@@ -1,13 +1,25 @@
 "use client";
 
-import Link from "next/link";
-import { APP_NAME } from "@/constants";
+import { Menu } from "lucide-react";
 
-export default function DashboardHeader() {
+type DashboardHeaderProps = {
+  onOpenSidebar: () => void;
+};
+
+export default function DashboardHeader({ onOpenSidebar }: DashboardHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 dark:border-gray-800 dark:bg-gray-900">
-      <h1 className="text-base font-medium text-gray-900 dark:text-white">{APP_NAME}</h1>
-      <div className="flex items-center gap-4">{/* User menu / actions will go here */}</div>
+    <header className="sticky top-0 z-20 border-b border-slate-200 bg-[#d6e6f5] px-3 py-3 sm:px-4 lg:px-5">
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={onOpenSidebar}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#b9d2ea] bg-white text-slate-600 lg:hidden"
+          aria-label="Open navigation"
+        >
+          <Menu className="h-4 w-4" />
+        </button>
+        <h1 className="text-sm font-semibold text-slate-700 sm:text-base">Admin Dashboard</h1>
+      </div>
     </header>
   );
 }

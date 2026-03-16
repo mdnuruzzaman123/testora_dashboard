@@ -1,16 +1,16 @@
 "use client";
 
+import { premiumByProductData } from "@/lib/mock-data";
 import {
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
 } from "recharts";
-import { premiumByProductData } from "@/lib/mock-data";
 
 export default function PremiumByProductChart() {
   return (
@@ -40,7 +40,6 @@ export default function PremiumByProductChart() {
             borderRadius: "8px",
             border: "1px solid #E2E8F0",
             fontSize: "12px",
-            boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
           }}
           labelStyle={{ color: "#1E293B", fontWeight: 600 }}
           formatter={(value) => [`${value ?? 0} users`, "Users"]}
