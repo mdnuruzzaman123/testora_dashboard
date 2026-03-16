@@ -93,7 +93,7 @@ export default function ArticleEditorPage({ initialArticle }: Props) {
             Back to Articles
           </Link>
           <span className="text-[#dce7f2]">/</span>
-          <h1 className="text-sm font-semibold text-[#3f5f7a] truncate max-w-[280px]">
+          <h1 className="text-sm font-semibold text-[#3f5f7a] truncate max-w-70">
             {pageTitle}
           </h1>
         </div>

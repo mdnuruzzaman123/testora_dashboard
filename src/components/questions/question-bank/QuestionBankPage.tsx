@@ -105,7 +105,7 @@ export default function QuestionBankPage() {
       <section className="rounded-lg border border-[#dce7f2] bg-white p-3">
         {/* Search + action buttons */}
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          <label className="relative block min-w-[240px] flex-1">
+          <label className="relative block min-w-60 flex-1">
             <Search className="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-[#9ab0c3]" />
             <input
               value={search}
@@ -176,7 +176,7 @@ export default function QuestionBankPage() {
       {/* Table */}
       <section className="overflow-hidden rounded-lg border border-[#dce7f2] bg-white">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1200px] text-left">
+          <table className="w-full min-w-300 text-left">
             <thead className="bg-[#f3f7fb] text-[11px] font-medium tracking-wide text-[#6f859b] uppercase">
               <tr>
                 <th className="px-4 py-2.5">ID</th>
@@ -189,7 +189,7 @@ export default function QuestionBankPage() {
                 <th className="px-4 py-2.5">Access</th>
                 <th className="px-4 py-2.5">Order</th>
                 <th className="px-4 py-2.5">Passage</th>
-                <th className="max-w-[200px] px-4 py-2.5">Question Text</th>
+                <th className="max-w-50 px-4 py-2.5">Question Text</th>
                 <th className="px-4 py-2.5">Correct</th>
                 <th className="px-4 py-2.5">Status</th>
                 <th className="px-4 py-2.5">Actions</th>
@@ -237,7 +237,7 @@ export default function QuestionBankPage() {
                   >
                     {row.passage}
                   </td>
-                  <td className="max-w-[200px] truncate px-4 py-2.5">{row.text}</td>
+                  <td className="max-w-50 truncate px-4 py-2.5">{row.text}</td>
                   <td className="px-4 py-2.5 font-semibold text-[#3ea666]">{row.correct}</td>
                   <td className="px-4 py-2.5">
                     <span

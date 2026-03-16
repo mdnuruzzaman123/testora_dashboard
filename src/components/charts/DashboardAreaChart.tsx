@@ -21,7 +21,7 @@ type DashboardAreaChartProps = {
 
 export default function DashboardAreaChart({ data }: DashboardAreaChartProps) {
   return (
-    <div className="h-[230px] w-full">
+    <div className="h-57.5 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
           <CartesianGrid stroke="#edf2f8" strokeDasharray="3 3" vertical={false} />

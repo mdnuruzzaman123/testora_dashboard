@@ -43,7 +43,7 @@ export default function QuestionLinkingSection() {
       </div>
 
       <div className="mt-3 overflow-x-auto rounded-md border border-[#dce7f2]">
-        <table className="w-full min-w-[800px] text-left">
+        <table className="w-full min-w-200 text-left">
           <thead className="bg-[#f3f7fb] text-[11px] font-medium tracking-wide text-[#6f859b] uppercase">
             <tr>
               <th className="px-3 py-2">Use</th>

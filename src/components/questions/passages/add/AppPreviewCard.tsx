@@ -41,7 +41,7 @@ export default function AppPreviewCard({ linkedCount }: Props) {
 
             {/* Passage banner */}
             <div className="mt-2 flex items-center justify-between rounded bg-[#edf4fb] px-2 py-1">
-              <span className="max-w-[100px] truncate text-[7.5px] font-medium text-[#2f86d8]">
+              <span className="max-w-25 truncate text-[7.5px] font-medium text-[#2f86d8]">
                 Passage 1 ({count}–{count * 2} questions)
               </span>
               <span className="rounded bg-[#2f86d8] px-1.5 py-0.5 text-[7px] font-medium text-white">
@@ -64,7 +64,7 @@ export default function AppPreviewCard({ linkedCount }: Props) {
             </p>
 
             {/* Options */}
-            {["a·g(sinθ–μkcosθ)", "a·g(sinθ+μkcosθ)", "a·g(cosθ–μksinθ)", "a·g(μkcosθ–sinθ)"].map(
+            {["a·g(sinθ-μkcosθ)", "a·g(sinθ+μkcosθ)", "a·g(cosθ-μksinθ)", "a·g(μkcosθ-sinθ)"].map(
               (opt, i) => (
                 <div
                   key={opt}

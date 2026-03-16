@@ -22,7 +22,7 @@ export default function PremiumSubscribersTable({
   return (
     <section className="overflow-hidden rounded-lg border border-[#dce7f2] bg-white">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[1100px] text-left">
+        <table className="w-full min-w-275 text-left">
           <thead className="bg-[#f3f7fb] text-[11px] font-medium tracking-wide text-[#6f859b] uppercase">
             <tr>
               <th className="px-4 py-2.5 sm:px-5">User ↕</th>

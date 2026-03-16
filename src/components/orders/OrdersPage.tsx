@@ -112,7 +112,7 @@ export default function OrdersPage() {
 
       <div className="overflow-hidden rounded-lg border border-[#dce7f2] bg-white">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1220px] text-left">
+          <table className="w-full min-w-305 text-left">
             <thead className="bg-[#f3f7fb] text-[10px] font-semibold tracking-wide text-[#6f859b] uppercase">
               <tr>
                 <th className="px-3 py-2.5">Order ID</th>
@@ -137,7 +137,7 @@ export default function OrdersPage() {
                   <td className="px-3 py-2.5">{order.date}</td>
                   <td className="px-3 py-2.5">{order.customerName}</td>
                   <td className="px-3 py-2.5">{order.phoneNumber}</td>
-                  <td className="max-w-[200px] px-3 py-2.5">{order.productSummary}</td>
+                  <td className="max-w-50 px-3 py-2.5">{order.productSummary}</td>
                   <td className="px-3 py-2.5">{order.paymentMethod}</td>
                   <td className="px-3 py-2.5">
                     <PaymentStatusBadge status={order.paymentStatus} />

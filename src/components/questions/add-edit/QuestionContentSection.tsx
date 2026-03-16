@@ -30,7 +30,7 @@ export default function QuestionContentSection({
         <label className="mb-1.5 block text-xs font-medium text-[#587189]">
           Question Image (optional)
         </label>
-        <div className="flex min-h-[80px] cursor-pointer flex-col items-center justify-center gap-2 rounded-md border border-dashed border-[#c8d9ea] bg-[#f3f8fd] p-4 text-center hover:bg-[#edf4fb]">
+        <div className="flex min-h-20 cursor-pointer flex-col items-center justify-center gap-2 rounded-md border border-dashed border-[#c8d9ea] bg-[#f3f8fd] p-4 text-center hover:bg-[#edf4fb]">
           <ImageIcon className="h-5 w-5 text-[#9ab0c3]" />
           <p className="text-xs text-[#7e95ab]">Click to upload or drag &amp; drop</p>
         </div>
