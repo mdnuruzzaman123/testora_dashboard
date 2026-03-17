@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, Suspense } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Lock } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Eye, EyeOff, AlertCircle, Lock, CheckCircle2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Suspense, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
 
 const schema = z
   .object({
@@ -63,7 +63,7 @@ function ResetPasswordForm() {
   const { label: strengthText, color: strengthColor } = strengthLabel(metCount);
 
   const onSubmit = async (_data: FormValues) => {
-    console.log(_data);
+
     setServerError(null);
     try {
       await new Promise((r) => setTimeout(r, 900));

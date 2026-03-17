@@ -31,7 +31,7 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (_data: LoginFormValues) => {
-    console.log(_data);
+
     setServerError(null);
     try {
       await new Promise((r) => setTimeout(r, 900));
