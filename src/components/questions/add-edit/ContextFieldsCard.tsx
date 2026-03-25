@@ -23,7 +23,7 @@ export default function ContextFieldsCard() {
         <li className="flex items-start gap-1.5 text-[11px] text-[#4a7eb8]">
           <span className="mt-0.5 shrink-0">›</span>
           <span>
-            <span className="font-medium">Core &amp; Elective Subject:</span> for Province Exams
+            <span className="font-medium">Core &amp; Elective Subject:</span> for Matura
           </span>
         </li>
       </ul>

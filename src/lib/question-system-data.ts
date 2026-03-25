@@ -1,11 +1,6 @@
 // ─── Category types ───────────────────────────────────────────────────────────
 
-export const QUESTION_CATEGORIES = [
-  "Entrance Exam",
-  "Semimatura",
-  "Matura",
-  "Province Exam",
-] as const;
+export const QUESTION_CATEGORIES = ["Entrance Exam", "Semimatura", "Matura"] as const;
 export type QuestionCategory = (typeof QUESTION_CATEGORIES)[number];
 
 /**
@@ -16,7 +11,7 @@ export type QuestionCategory = (typeof QUESTION_CATEGORIES)[number];
  */
 export function getClassificationVariant(category: string): "entrance" | "standard" | "province" {
   if (category === "Entrance Exam") return "entrance";
-  if (category === "Province Exam") return "province";
+  if (category === "Matura") return "province";
   return "standard";
 }
 

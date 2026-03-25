@@ -154,7 +154,7 @@ export default function ClassificationSection({ data, onChange }: Classification
           </>
         )}
 
-        {/* ── Province Exam variant ── */}
+        {/* ── Matura variant ── */}
         {variant === "province" && (
           <>
             <div>
