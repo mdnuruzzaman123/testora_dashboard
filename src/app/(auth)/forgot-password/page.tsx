@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { cn } from "@/lib/utils";
+import { getErrorMessage, useForgotPasswordMutation } from "@/store/apis";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { AlertCircle, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Mail } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const schema = z.object({
   email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
@@ -18,6 +20,7 @@ type FormValues = z.infer<typeof schema>;
 export default function ForgotPasswordPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [forgotPassword, { isLoading: isSending }] = useForgotPasswordMutation();
 
   const {
     register,
@@ -28,13 +31,17 @@ export default function ForgotPasswordPage() {
   const onSubmit = async (data: FormValues) => {
     setServerError(null);
     try {
-      await new Promise((r) => setTimeout(r, 800));
-      // Pass email to verify-otp page via query param
+      const response = await forgotPassword({ email: data.email }).unwrap();
+      toast.success(response.message || "OTP sent to your email.");
       router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
-    } catch {
-      setServerError("Something went wrong. Please try again.");
+    } catch (error) {
+      const message = getErrorMessage(error, "Something went wrong. Please try again.");
+      setServerError(message);
+      toast.error(message);
     }
   };
+
+  const isSubmittingForm = isSubmitting || isSending;
 
   return (
     <div className="w-full max-w-100">
@@ -77,13 +84,13 @@ export default function ForgotPasswordPage() {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmittingForm}
           className="bg-primary hover:bg-primary/90 flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold text-white transition disabled:opacity-60"
         >
-          {isSubmitting && (
+          {isSubmittingForm && (
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
           )}
-          {isSubmitting ? "Sending..." : "Continue"}
+          {isSubmittingForm ? "Sending..." : "Continue"}
         </button>
       </form>
 

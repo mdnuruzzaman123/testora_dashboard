@@ -1,9 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import {
+  getErrorMessage,
+  useResetPasswordOtpMutation,
+  useVerifyResetPasswordMutation,
+} from "@/store/apis";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 const OTP_LENGTH = 6;
 
@@ -18,6 +24,8 @@ function VerifyOtpForm() {
   const [isResending, setIsResending] = useState(false);
   const [resendCoolDown, setResendCoolDown] = useState(0);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const [verifyResetPassword] = useVerifyResetPasswordMutation();
+  const [resetPasswordOtp] = useResetPasswordOtpMutation();
 
   // Countdown timer for resend
   useEffect(() => {
@@ -61,25 +69,39 @@ function VerifyOtpForm() {
       setError("Please enter all 6 digits.");
       return;
     }
+    if (!email) {
+      setError("Email is missing. Please go back and try again.");
+      return;
+    }
     setIsVerifying(true);
     setError(null);
     try {
-      await new Promise((r) => setTimeout(r, 900));
+      const response = await verifyResetPassword({ email, otp: code }).unwrap();
+      toast.success(response.message || "OTP verified successfully.");
       router.push(`/reset-password?email=${encodeURIComponent(email)}`);
-    } catch {
-      setError("Invalid code. Please try again.");
+    } catch (apiError) {
+      const message = getErrorMessage(apiError, "Invalid code. Please try again.");
+      setError(message);
+      toast.error(message);
     } finally {
       setIsVerifying(false);
     }
   };
 
   const handleResend = async () => {
+    if (!email) {
+      setError("Email is missing. Please go back and try again.");
+      return;
+    }
     setIsResending(true);
     try {
-      await new Promise((r) => setTimeout(r, 600));
+      const response = await resetPasswordOtp({ email }).unwrap();
+      toast.success(response.message || "OTP sent successfully.");
       setResendCoolDown(60);
       setOtp(Array(OTP_LENGTH).fill(""));
       inputRefs.current[0]?.focus();
+    } catch (apiError) {
+      toast.error(getErrorMessage(apiError, "Unable to resend code right now."));
     } finally {
       setIsResending(false);
     }

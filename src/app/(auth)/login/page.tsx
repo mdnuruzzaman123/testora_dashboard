@@ -1,13 +1,17 @@
 "use client";
 
+import { cn } from "@/lib/utils";
+import { getErrorMessage, useLoginMutation } from "@/store/apis";
+import { useAppDispatch } from "@/store/hooks";
+import { setCredentials } from "@/store/slices/authSlice";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Eye, EyeOff, Lock, User } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Eye, EyeOff, AlertCircle, User, Lock } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
@@ -18,8 +22,10 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [login, { isLoading: isLoggingIn }] = useLoginMutation();
 
   const {
     register,
@@ -30,16 +36,35 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = async (_data: LoginFormValues) => {
-
+  const onSubmit = async (data: LoginFormValues) => {
     setServerError(null);
     try {
-      await new Promise((r) => setTimeout(r, 900));
+      const response = await login({ email: data.email, password: data.password }).unwrap();
+
+      const user = response.data.user ?? {
+        id: response.data.userId ?? "",
+        name: data.email.split("@")[0] || "User",
+        email: data.email,
+        role: "admin",
+      };
+
+      dispatch(
+        setCredentials({
+          user,
+          token: response.data.accessToken,
+        })
+      );
+
+      toast.success(response.message || "Logged in successfully.");
       router.push("/dashboard");
-    } catch {
-      setServerError("Invalid credentials. Please try again.");
+    } catch (error) {
+      const message = getErrorMessage(error, "Invalid credentials. Please try again.");
+      setServerError(message);
+      toast.error(message);
     }
   };
+
+  const isSubmittingForm = isSubmitting || isLoggingIn;
 
   return (
     <div className="w-full max-w-100">
@@ -126,13 +151,13 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmittingForm}
           className="bg-primary hover:bg-primary/90 flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting && (
+          {isSubmittingForm && (
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
           )}
-          {isSubmitting ? "Logging in..." : "Login"}
+          {isSubmittingForm ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>

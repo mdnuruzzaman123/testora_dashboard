@@ -1,12 +1,14 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { getErrorMessage, useResetPasswordMutation } from "@/store/apis";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, CheckCircle2, Eye, EyeOff, Lock } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const schema = z
@@ -43,6 +45,7 @@ function strengthLabel(score: number): { label: string; color: string } {
 }
 
 function ResetPasswordForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
 
@@ -50,6 +53,7 @@ function ResetPasswordForm() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [success, setSuccess] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [resetPassword, { isLoading: isResetting }] = useResetPasswordMutation();
 
   const {
     register,
@@ -62,14 +66,24 @@ function ResetPasswordForm() {
   const metCount = requirements.filter((r) => r.test(passwordValue)).length;
   const { label: strengthText, color: strengthColor } = strengthLabel(metCount);
 
-  const onSubmit = async (_data: FormValues) => {
-
+  const onSubmit = async (data: FormValues) => {
     setServerError(null);
+
+    if (!email) {
+      const message = "Email is missing. Please restart the reset flow.";
+      setServerError(message);
+      toast.error(message);
+      return;
+    }
+
     try {
-      await new Promise((r) => setTimeout(r, 900));
+      const response = await resetPassword({ email, newPassword: data.password }).unwrap();
+      toast.success(response.message || "Password has been reset successfully.");
       setSuccess(true);
-    } catch {
-      setServerError("Something went wrong. Please try again.");
+    } catch (error) {
+      const message = getErrorMessage(error, "Something went wrong. Please try again.");
+      setServerError(message);
+      toast.error(message);
     }
   };
 
@@ -231,15 +245,22 @@ function ResetPasswordForm() {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isResetting}
           className="bg-primary hover:bg-primary/90 flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold text-white transition disabled:opacity-60"
         >
-          {isSubmitting && (
+          {(isSubmitting || isResetting) && (
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
           )}
-          {isSubmitting ? "Saving..." : "Save New Password"}
+          {isSubmitting || isResetting ? "Saving..." : "Save New Password"}
         </button>
       </form>
+      <button
+        type="button"
+        onClick={() => router.push(`/verify-otp?email=${encodeURIComponent(email)}`)}
+        className="mt-3 w-full text-xs text-gray-500 hover:text-gray-700"
+      >
+        Back to verification
+      </button>
     </div>
   );
 }
