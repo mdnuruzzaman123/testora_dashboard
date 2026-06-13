@@ -1,96 +1,236 @@
 "use client";
 
 import Pagination from "@/components/users/Pagination";
-import { questionBankRows, type QuestionStatus } from "@/lib/question-system-data";
 import { cn } from "@/lib/utils";
+import {
+  useGetQuestionsQuery,
+  useLazyGetSingleQuestionQuery,
+  type QuestionListItem,
+  type SingleQuestionResponse,
+} from "@/store/apis";
 import {
   ChevronDown,
   Copy,
-  Download,
   Eye,
   Pencil,
   Plus,
   Search,
   SlidersHorizontal,
   Trash2,
+  X,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
-// ─── Badge helpers ────────────────────────────────────────────────────────────
+const STATUS_TABS = [
+  { label: "All", value: "All" },
+  { label: "Published", value: "published" },
+  { label: "Draft", value: "draft" },
+  { label: "Hidden", value: "hidden" },
+  { label: "Archived", value: "archived" },
+];
 
-function statusBadgeClass(status: QuestionStatus) {
-  if (status === "Published") return "border-[#d0ecd9] bg-[#e9f8ef] text-[#3ea666]";
-  if (status === "Draft") return "border-[#f0dfb9] bg-[#fff3da] text-[#c48a2e]";
-  if (status === "Hidden") return "border-[#dee8f2] bg-[#f2f6fb] text-[#6d839a]";
+function statusBadgeClass(status: string) {
+  if (status === "published") return "border-[#d0ecd9] bg-[#e9f8ef] text-[#3ea666]";
+  if (status === "draft") return "border-[#f0dfb9] bg-[#fff3da] text-[#c48a2e]";
+  if (status === "hidden") return "border-[#dee8f2] bg-[#f2f6fb] text-[#6d839a]";
   return "border-[#f4d7d7] bg-[#fdeeee] text-[#db6f6f]";
 }
 
 function accessBadgeClass(access: string) {
-  return access === "Premium"
+  return access === "premium"
     ? "border-[#e4ddf4] bg-[#f1edfb] text-[#8468c4]"
     : "border-[#d6e5f4] bg-[#eaf2fb] text-[#4d93d9]";
 }
 
-function categoryBadgeClass(category: string) {
-  if (category === "Matura") return "border-[#d6e5f4] bg-[#eaf2fb] text-[#4d93d9]";
-  if (category === "Semimatura") return "border-[#dce4f6] bg-[#edf0fb] text-[#748ccc]";
-  if (category === "Entrance Exam") return "border-[#d5ece5] bg-[#e9f5f1] text-[#3b9b81]";
+function categoryBadgeClass(examType: string) {
+  if (examType === "matura") return "border-[#d6e5f4] bg-[#eaf2fb] text-[#4d93d9]";
+  if (examType === "semimatura") return "border-[#dce4f6] bg-[#edf0fb] text-[#748ccc]";
+  if (examType === "provime") return "border-[#d5ece5] bg-[#e9f5f1] text-[#3b9b81]";
   return "border-[#dee8f2] bg-[#f2f6fb] text-[#6d839a]";
 }
 
-const STATUS_TABS: { label: string; value: string }[] = [
-  { label: "All", value: "All" },
-  { label: "Published", value: "Published" },
-  { label: "Draft", value: "Draft" },
-  { label: "Hidden", value: "Hidden" },
-  { label: "Archived", value: "Archived" },
-];
+function difficultyBadgeClass(level: string) {
+  if (level === "easy") return "border-[#d0ecd9] bg-[#e9f8ef] text-[#3ea666]";
+  if (level === "medium") return "border-[#f0dfb9] bg-[#fff3da] text-[#c48a2e]";
+  return "border-[#f4d7d7] bg-[#fdeeee] text-[#db6f6f]";
+}
 
-// ─── Component ────────────────────────────────────────────────────────────────
+function passageLabel(passageCode: string | null) {
+  return passageCode ?? "—";
+}
+
+function SingleQuestionModal({
+  open,
+  question,
+  onClose,
+}: {
+  open: boolean;
+  question: SingleQuestionResponse | null;
+  onClose: () => void;
+}) {
+  if (!open || !question) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2d4056]/30 p-4">
+      <div className="w-full max-w-3xl rounded-2xl border border-[#dce7f2] bg-white">
+        <div className="flex items-start justify-between border-b border-[#e6edf5] px-5 py-4">
+          <div>
+            <h3 className="text-xl font-semibold text-[#2f3f52]">Question Details</h3>
+            <p className="text-xs text-[#8ea1b4]">{question.questionId}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md p-1 text-[#8ea1b5] hover:bg-[#f4f8fc]"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="space-y-4 px-5 py-4 text-sm">
+          <div>
+            <p className="mb-1 text-xs text-[#8ea1b4]">Question Text</p>
+            <p className="font-medium text-[#4f6d87]">{question.questionText}</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div>
+              <p className="text-xs text-[#8ea1b4]">Exam Type</p>
+              <p className="font-medium text-[#4f6d87]">{question.examType}</p>
+            </div>
+            <div>
+              <p className="text-xs text-[#8ea1b4]">Year</p>
+              <p className="font-medium text-[#4f6d87]">{question.year}</p>
+            </div>
+            <div>
+              <p className="text-xs text-[#8ea1b4]">Subject</p>
+              <p className="font-medium text-[#4f6d87]">{question.subjectName}</p>
+            </div>
+            <div>
+              <p className="text-xs text-[#8ea1b4]">Faculty</p>
+              <p className="font-medium text-[#4f6d87]">{question.facultyName}</p>
+            </div>
+            <div>
+              <p className="text-xs text-[#8ea1b4]">Difficulty</p>
+              <p className="font-medium text-[#4f6d87]">{question.difficultyLevel}</p>
+            </div>
+            <div>
+              <p className="text-xs text-[#8ea1b4]">Access</p>
+              <p className="font-medium text-[#4f6d87]">{question.access}</p>
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-2 text-xs text-[#8ea1b4]">Options</p>
+            <div className="grid gap-2 md:grid-cols-2">
+              {question.options.map((option, index) => (
+                <div
+                  key={`${option.text}-${index}`}
+                  className={cn(
+                    "rounded-lg border px-3 py-2",
+                    index === question.correctOptionIndex
+                      ? "border-[#d0ecd9] bg-[#e9f8ef]"
+                      : "border-[#dce7f2] bg-[#f8fbff]"
+                  )}
+                >
+                  <p className="text-xs font-medium text-[#4f6d87]">
+                    {index + 1}. {option.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-1 text-xs text-[#8ea1b4]">Explanation</p>
+            <p className="text-[#4f6d87]">{question.explanation}</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div>
+              <p className="text-xs text-[#8ea1b4]">Attempts</p>
+              <p className="font-medium text-[#4f6d87]">{question.stats.totalAttempts}</p>
+            </div>
+            <div>
+              <p className="text-xs text-[#8ea1b4]">Correct</p>
+              <p className="font-medium text-[#4f6d87]">{question.stats.correctCount}</p>
+            </div>
+            <div>
+              <p className="text-xs text-[#8ea1b4]">Wrong</p>
+              <p className="font-medium text-[#4f6d87]">{question.stats.wrongCount}</p>
+            </div>
+            <div>
+              <p className="text-xs text-[#8ea1b4]">Correct %</p>
+              <p className="font-medium text-[#4f6d87]">{question.stats.correctPercentage}%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function QuestionBankPage() {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
 
-  const filtered = useMemo(() => {
-    return questionBankRows.filter((row) => {
-      const q = search.trim().toLowerCase();
-      const matchSearch =
-        q.length === 0 ||
-        row.id.toLowerCase().includes(q) ||
-        row.text.toLowerCase().includes(q) ||
-        row.subject.toLowerCase().includes(q);
-      const matchTab = activeTab === "All" || row.status === activeTab;
-      return matchSearch && matchTab;
-    });
-  }, [search, activeTab]);
+  const { data, isLoading, isFetching, isError, error } = useGetQuestionsQuery({
+    page,
+    limit: rowsPerPage,
+    examType: activeTab === "All" ? undefined : activeTab,
+    searchTerm: search.trim() || undefined,
+  });
 
-  const safePage = Math.min(page, Math.max(1, Math.ceil(filtered.length / rowsPerPage)));
+  const [loadQuestion, { data: singleQuestionResponse, isFetching: isQuestionFetching }] =
+    useLazyGetSingleQuestionQuery();
 
-  const paginated = useMemo(() => {
-    const start = (safePage - 1) * rowsPerPage;
-    return filtered.slice(start, start + rowsPerPage);
-  }, [filtered, safePage, rowsPerPage]);
+  useEffect(() => {
+    if (!selectedQuestion) return;
+    loadQuestion(selectedQuestion);
+  }, [loadQuestion, selectedQuestion]);
+
+  useEffect(() => {
+    if (!isError) return;
+    const message =
+      (error as { data?: { message?: string }; error?: string } | undefined)?.data?.message ??
+      (error as { data?: { message?: string }; error?: string } | undefined)?.error ??
+      "Unable to load questions.";
+    toast.error(message);
+  }, [error, isError]);
+
+  const questionList = useMemo(() => data?.data.questions ?? [], [data]);
+  const totalItems = data?.data.meta.total ?? 0;
+  const totalPages = data?.data.meta.totalPages ?? 1;
+  const safePage = Math.min(page, totalPages);
+
+  const statusCounts = useMemo(
+    () =>
+      STATUS_TABS.reduce<Record<string, number>>((acc, tab) => {
+        acc[tab.value] =
+          tab.value === "All"
+            ? totalItems
+            : questionList.filter((item) => item.status === tab.value).length;
+        return acc;
+      }, {}),
+    [questionList, totalItems]
+  );
+
+  const rows = questionList;
 
   return (
     <div className="space-y-3">
-      {/* Header */}
       <section className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-base font-semibold text-[#3f5f7a]">Question Bank</h2>
           <p className="text-sm text-[#7e95ab]">Manage all questions in one centralized database</p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <button
-            type="button"
-            className="inline-flex h-9 items-center gap-1.5 rounded-md border border-[#dce7f2] bg-white px-3 text-xs font-medium text-[#3f5f7a] hover:bg-[#f8fbff]"
-          >
-            <Download className="h-3.5 w-3.5" />
-            Import
-          </button>
           <Link
             href="/questions/question-bank/add"
             className="inline-flex h-9 items-center gap-1.5 rounded-md bg-[#2f86d8] px-3 text-xs font-medium text-white hover:bg-[#2a78c6]"
@@ -101,9 +241,7 @@ export default function QuestionBankPage() {
         </div>
       </section>
 
-      {/* Filters + status tabs */}
       <section className="rounded-lg border border-[#dce7f2] bg-white p-3">
-        {/* Search + action buttons */}
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <label className="relative block min-w-60 flex-1">
             <Search className="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-[#9ab0c3]" />
@@ -135,14 +273,10 @@ export default function QuestionBankPage() {
           </button>
         </div>
 
-        {/* Status tab pills */}
         <div className="flex flex-wrap gap-1.5">
           {STATUS_TABS.map((tab) => {
             const isActive = tab.value === activeTab;
-            const count =
-              tab.value === "All"
-                ? questionBankRows.length
-                : questionBankRows.filter((r) => r.status === tab.value).length;
+            const count = statusCounts[tab.value] ?? 0;
             return (
               <button
                 key={tab.value}
@@ -173,21 +307,20 @@ export default function QuestionBankPage() {
         </div>
       </section>
 
-      {/* Table */}
       <section className="overflow-hidden rounded-lg border border-[#dce7f2] bg-white">
         <div className="overflow-x-auto">
           <table className="w-full min-w-300 text-left">
             <thead className="bg-[#f3f7fb] text-[11px] font-medium tracking-wide text-[#6f859b] uppercase">
               <tr>
                 <th className="px-4 py-2.5">ID</th>
+                <th className="px-4 py-2.5">Exam Type</th>
                 <th className="px-4 py-2.5">Category</th>
                 <th className="px-4 py-2.5">Year</th>
                 <th className="px-4 py-2.5">Subject</th>
                 <th className="px-4 py-2.5">Faculty</th>
-                <th className="px-4 py-2.5">Dept</th>
-                <th className="px-4 py-2.5">Type</th>
+                <th className="px-4 py-2.5">Difficulty</th>
                 <th className="px-4 py-2.5">Access</th>
-                <th className="px-4 py-2.5">Order</th>
+                <th className="px-4 py-2.5">Created At</th>
                 <th className="px-4 py-2.5">Passage</th>
                 <th className="max-w-50 px-4 py-2.5">Question Text</th>
                 <th className="px-4 py-2.5">Correct</th>
@@ -197,55 +330,45 @@ export default function QuestionBankPage() {
             </thead>
 
             <tbody>
-              {paginated.map((row) => (
+              {(isLoading || isFetching) && rows.length === 0 ? (
+                <tr>
+                  <td colSpan={14} className="px-5 py-10 text-center text-sm text-[#90a3b6]">
+                    Loading questions...
+                  </td>
+                </tr>
+              ) : null}
+
+              {rows.map((row: QuestionListItem) => (
                 <tr
-                  key={row.id}
+                  key={row._id}
                   className="border-b border-[#ecf2f8] text-xs text-[#5e768e] last:border-b-0 hover:bg-[#f8fbff]"
                 >
-                  <td className="px-4 py-2.5 font-semibold text-[#2f86d8]">{row.id}</td>
+                  <td className="px-4 py-2.5 font-semibold text-[#2f86d8]">{row._id}</td>
                   <td className="px-4 py-2.5">
-                    <span
-                      className={cn(
-                        "rounded-sm border px-2 py-0.5 text-[11px]",
-                        categoryBadgeClass(row.category)
-                      )}
-                    >
-                      {row.category}
+                    <span className={cn("rounded-sm border px-2 py-0.5 text-[11px]", categoryBadgeClass(row.examType))}>
+                      {row.examType}
                     </span>
                   </td>
+                  <td className="px-4 py-2.5">{row.examType}</td>
                   <td className="px-4 py-2.5">{row.year}</td>
-                  <td className="px-4 py-2.5">{row.subject}</td>
-                  <td className="px-4 py-2.5 text-[#90a3b6]">{row.faculty}</td>
-                  <td className="px-4 py-2.5 text-[#90a3b6]">{row.dept}</td>
-                  <td className="px-4 py-2.5">{row.type}</td>
+                  <td className="px-4 py-2.5">{row.subjectName}</td>
+                  <td className="px-4 py-2.5 text-[#90a3b6]">{row.facultyName}</td>
                   <td className="px-4 py-2.5">
-                    <span
-                      className={cn(
-                        "rounded-sm border px-2 py-0.5 text-[11px]",
-                        accessBadgeClass(row.access)
-                      )}
-                    >
+                    <span className={cn("rounded-sm border px-2 py-0.5 text-[11px]", difficultyBadgeClass(row.difficultyLevel))}>
+                      {row.difficultyLevel}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2.5">
+                    <span className={cn("rounded-sm border px-2 py-0.5 text-[11px]", accessBadgeClass(row.access))}>
                       {row.access}
                     </span>
                   </td>
-                  <td className="px-4 py-2.5">{row.order}</td>
-                  <td
-                    className={cn(
-                      "px-4 py-2.5 text-[11px]",
-                      row.passage !== "—" ? "font-medium text-[#8468c4]" : "text-[#90a3b6]"
-                    )}
-                  >
-                    {row.passage}
-                  </td>
-                  <td className="max-w-50 truncate px-4 py-2.5">{row.text}</td>
-                  <td className="px-4 py-2.5 font-semibold text-[#3ea666]">{row.correct}</td>
+                  <td className="px-4 py-2.5">{new Date(row.createdAt).toLocaleDateString()}</td>
+                  <td className="px-4 py-2.5 text-[#90a3b6]">{passageLabel(row.passageCode)}</td>
+                  <td className="max-w-50 truncate px-4 py-2.5">{row.questionText}</td>
+                  <td className="px-4 py-2.5 font-semibold text-[#3ea666]">{row.correctOptionIndex + 1}</td>
                   <td className="px-4 py-2.5">
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px]",
-                        statusBadgeClass(row.status)
-                      )}
-                    >
+                    <span className={cn("inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px]", statusBadgeClass(row.status))}>
                       <span className="h-1.5 w-1.5 rounded-full bg-current" />
                       {row.status}
                     </span>
@@ -255,6 +378,7 @@ export default function QuestionBankPage() {
                       <button
                         type="button"
                         aria-label="View question"
+                        onClick={() => setSelectedQuestion(row._id)}
                         className="rounded p-1 hover:bg-[#f3f7fb] hover:text-[#2f86d8]"
                       >
                         <Eye className="h-3.5 w-3.5" />
@@ -285,7 +409,7 @@ export default function QuestionBankPage() {
                 </tr>
               ))}
 
-              {paginated.length === 0 && (
+              {rows.length === 0 && !isLoading && !isFetching && (
                 <tr>
                   <td colSpan={14} className="px-5 py-10 text-center text-sm text-[#90a3b6]">
                     No questions match the current filters.
@@ -297,7 +421,7 @@ export default function QuestionBankPage() {
         </div>
 
         <Pagination
-          totalItems={filtered.length}
+          totalItems={data?.data.meta.total ?? 0}
           page={safePage}
           rowsPerPage={rowsPerPage}
           onPageChange={setPage}
@@ -307,6 +431,14 @@ export default function QuestionBankPage() {
           }}
         />
       </section>
+
+      <SingleQuestionModal
+        open={!!selectedQuestion}
+        question={singleQuestionResponse?.data ?? null}
+        onClose={() => setSelectedQuestion(null)}
+      />
+
+      {isQuestionFetching ? null : null}
     </div>
   );
 }
