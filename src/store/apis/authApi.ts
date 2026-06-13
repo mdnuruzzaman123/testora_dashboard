@@ -1,5 +1,4 @@
-import { API_BASE_URL } from "@/constants";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "../baseApi";
 
 export interface ApiEnvelope<T = unknown> {
   statusCode: number;
@@ -56,21 +55,7 @@ export function getErrorMessage(error: unknown, fallback = "Something went wrong
   return fallback;
 }
 
-export const authApi = createApi({
-  reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_BASE_URL,
-    prepareHeaders: (headers, { getState }) => {
-      const state = getState() as { auth?: { token?: string | null } };
-      const token = state.auth?.token;
-
-      if (token) {
-        headers.set("authorization", token.startsWith("Bearer ") ? token : `Bearer ${token}`);
-      }
-
-      return headers;
-    },
-  }),
+export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<ApiEnvelope<LoginData>, LoginRequest>({
       query: (body) => ({ url: "/auth/login", method: "POST", body }),
@@ -96,9 +81,6 @@ export const authApi = createApi({
     refreshToken: builder.mutation<ApiEnvelope<LoginData>, RefreshTokenRequest>({
       query: (body) => ({ url: "/auth/refresh-token", method: "POST", body }),
     }),
-    socialLogin: builder.mutation<ApiEnvelope<LoginData>, Record<string, unknown>>({
-      query: (body) => ({ url: "/auth/social-login", method: "POST", body }),
-    }),
   }),
 });
 
@@ -111,5 +93,4 @@ export const {
   useResendOtpMutation,
   useVerifyEmailMutation,
   useRefreshTokenMutation,
-  useSocialLoginMutation,
 } = authApi;

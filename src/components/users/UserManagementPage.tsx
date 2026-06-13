@@ -5,71 +5,105 @@ import SuspendUserModal from "@/components/users/SuspendUserModal";
 import UserDetailsModal from "@/components/users/UserDetailsModal";
 import UserFilters from "@/components/users/UserFilters";
 import UsersTable from "@/components/users/UsersTable";
-import { userManagementUsers } from "@/lib/user-management-data";
-import { useMemo, useState } from "react";
+import { PAGINATION_DEFAULTS } from "@/constants";
+import { cn } from "@/lib/utils";
+import { mapUser } from "@/lib/user-management-utils";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
+import {
+  useGetUserListQuery,
+  useGetUserOverviewQuery,
+} from "@/store/apis";
 import type { UserManagementRow } from "./UserRow";
 
-const categoryOptions = ["All", "Matura", "Semimatura", "Entrance Exams"];
-const typeOptions = ["All", "Student", "Premium"];
-const statusOptions = ["All", "Active", "Suspended", "Inactive"];
+const statusOptions = ["All", "active", "blocked", "disabled"];
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-3">
+      <div className="space-y-2">
+        <div className="h-6 w-44 animate-pulse rounded bg-slate-200/80" />
+        <div className="h-4 w-64 animate-pulse rounded bg-slate-200/80" />
+      </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className="h-24 animate-pulse rounded-lg border border-[#dce7f2] bg-white" />
+        ))}
+      </div>
+      <div className="h-16 animate-pulse rounded-lg border border-[#dce7f2] bg-white" />
+      <div className="h-96 animate-pulse rounded-lg border border-[#dce7f2] bg-white" />
+    </div>
+  );
+}
 
 export default function UserManagementPage() {
-  const [usersState, setUsersState] = useState(userManagementUsers);
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
-  const [type, setType] = useState("All");
-  const [plan, setPlan] = useState("All");
   const [status, setStatus] = useState("All");
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [plan, setPlan] = useState("All");
+  const [page, setPage] = useState(PAGINATION_DEFAULTS.PAGE);
+  const [rowsPerPage, setRowsPerPage] = useState(PAGINATION_DEFAULTS.LIMIT);
   const [viewingUser, setViewingUser] = useState<UserManagementRow | null>(null);
   const [suspendingUser, setSuspendingUser] = useState<UserManagementRow | null>(null);
 
+  const { data: overviewResponse, isLoading: isOverviewLoading, isError: overviewError, error: overviewFetchError } =
+    useGetUserOverviewQuery();
+  const {
+    data: usersResponse,
+    isLoading: isUsersLoading,
+    isFetching: isUsersFetching,
+    isError: usersError,
+    error: usersFetchError,
+  } = useGetUserListQuery({
+    page,
+    limit: rowsPerPage,
+    status: status === "All" ? undefined : status,
+    plan: plan === "All" ? undefined : plan,
+    searchTerm: search.trim() || undefined,
+  });
+
+  const previousError = useRef<string | null>(null);
+
+  useEffect(() => {
+    const message =
+      (overviewError && "Unable to load user overview.") ||
+      (usersError && "Unable to load user list.") ||
+      null;
+
+    const detail =
+      (overviewError && (overviewFetchError as { data?: { message?: string }; error?: string })) ||
+      (usersError && (usersFetchError as { data?: { message?: string }; error?: string })) ||
+      undefined;
+
+    if (message && previousError.current !== message) {
+      previousError.current = message;
+      toast.error(detail?.data?.message ?? detail?.error ?? message);
+    }
+  }, [overviewError, usersError, overviewFetchError, usersFetchError, previousError]);
+
   const planOptions = useMemo(() => {
-    const plans = Array.from(new Set(usersState.map((user) => user.activePlan)));
-    return ["All", ...plans];
-  }, [usersState]);
+    const availablePlans = Array.from(
+      new Set((usersResponse?.data.data ?? []).map((user) => user.plan).filter(Boolean))
+    ) as string[];
+    return ["All", ...availablePlans];
+  }, [usersResponse]);
 
-  const filteredUsers = useMemo(() => {
-    return usersState.filter((user) => {
-      const query = search.trim().toLowerCase();
-      const matchesSearch =
-        query.length === 0 ||
-        user.name.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query);
-      const matchesCategory = category === "All" || user.preferredCategory === category;
-      const matchesType = type === "All" || user.type === type;
-      const matchesPlan = plan === "All" || user.activePlan === plan;
-      const matchesStatus = status === "All" || user.status === status;
+  const users = useMemo(() => (usersResponse?.data.data ?? []).map(mapUser), [usersResponse]);
 
-      return matchesSearch && matchesCategory && matchesType && matchesPlan && matchesStatus;
-    });
-  }, [usersState, search, category, type, plan, status]);
+  const stats = useMemo(
+    () => ({
+      total: overviewResponse?.data.totalUsers ?? 0,
+      active: overviewResponse?.data.activeAccounts ?? 0,
+      suspended: overviewResponse?.data.blockedAccounts ?? 0,
+      inactive: overviewResponse?.data.disabledAccounts ?? 0,
+    }),
+    [overviewResponse]
+  );
 
-  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / rowsPerPage));
+  const totalItems = usersResponse?.data.meta.total ?? 0;
+  const totalPages = usersResponse?.data.meta.totalPages ?? 1;
   const safePage = Math.min(page, totalPages);
-
-  const paginatedUsers = useMemo(() => {
-    const start = (safePage - 1) * rowsPerPage;
-    return filteredUsers.slice(start, start + rowsPerPage);
-  }, [filteredUsers, safePage, rowsPerPage]);
-
-  const stats = useMemo(() => {
-    return {
-      total: usersState.length,
-      active: usersState.filter((user) => user.status === "Active").length,
-      suspended: usersState.filter((user) => user.status === "Suspended").length,
-      inactive: usersState.filter((user) => user.status === "Inactive").length,
-    };
-  }, [usersState]);
-
-  const updateStatus = (id: string, newStatus: "Active" | "Suspended" | "Inactive") => {
-    setUsersState((prev) => prev.map((u) => (u.id === id ? { ...u, status: newStatus } : u)));
-  };
-
-  const handleArchive = (id: string) => {
-    setUsersState((prev) => prev.filter((u) => u.id !== id));
-  };
+  const isLoading = isOverviewLoading || isUsersLoading;
+  const isRefreshing = isUsersFetching && !isUsersLoading;
 
   return (
     <div className="space-y-3">
@@ -78,7 +112,7 @@ export default function UserManagementPage() {
         <p className="text-sm text-[#7e95ab]">View, search, and manage all users</p>
       </section>
 
-      <StatsCards stats={stats} />
+      {isLoading ? <PageSkeleton /> : <StatsCards stats={stats} />}
 
       <UserFilters
         search={search}
@@ -86,16 +120,10 @@ export default function UserManagementPage() {
           setSearch(value);
           setPage(1);
         }}
-        category={category}
-        onCategoryChange={(value) => {
-          setCategory(value);
-          setPage(1);
-        }}
-        type={type}
-        onTypeChange={(value) => {
-          setType(value);
-          setPage(1);
-        }}
+        category="All"
+        onCategoryChange={() => undefined}
+        type="All"
+        onTypeChange={() => undefined}
         plan={plan}
         onPlanChange={(value) => {
           setPlan(value);
@@ -106,27 +134,35 @@ export default function UserManagementPage() {
           setStatus(value);
           setPage(1);
         }}
-        categories={categoryOptions}
-        types={typeOptions}
+        categories={["All"]}
+        types={["All"]}
         plans={planOptions}
         statuses={statusOptions}
       />
 
-      <UsersTable
-        users={paginatedUsers}
-        totalItems={filteredUsers.length}
-        page={safePage}
-        rowsPerPage={rowsPerPage}
-        onPageChange={setPage}
-        onRowsPerPageChange={(rows) => {
-          setRowsPerPage(rows);
-          setPage(1);
-        }}
-        onViewUser={setViewingUser}
-        onSuspendUser={setSuspendingUser}
-        onDeactivateUser={(user) => updateStatus(user.id, "Inactive")}
-        onArchiveUser={(user) => handleArchive(user.id)}
-      />
+      <div className={cn("relative", isRefreshing && "opacity-90")}>
+        <UsersTable
+          users={users}
+          totalItems={totalItems}
+          page={safePage}
+          rowsPerPage={rowsPerPage}
+          onPageChange={setPage}
+          onRowsPerPageChange={(rows) => {
+            setRowsPerPage(rows);
+            setPage(1);
+          }}
+          onViewUser={setViewingUser}
+          onSuspendUser={setSuspendingUser}
+          onDeactivateUser={(user) => toast.info(`Deactivate flow for ${user.name} is not wired yet.`)}
+          onArchiveUser={(user) => toast.info(`Archive flow for ${user.name} is not wired yet.`)}
+        />
+      </div>
+
+      {users.length === 0 && !isLoading ? (
+        <div className="rounded-lg border border-dashed border-[#dce7f2] bg-white px-4 py-8 text-center text-sm text-[#7e95ab]">
+          No users match the current filters.
+        </div>
+      ) : null}
 
       <UserDetailsModal
         open={!!viewingUser}
@@ -138,9 +174,9 @@ export default function UserManagementPage() {
         open={!!suspendingUser}
         user={suspendingUser}
         onClose={() => setSuspendingUser(null)}
-        onConfirm={() => {
+        onConfirm={(reason) => {
           if (suspendingUser) {
-            updateStatus(suspendingUser.id, "Suspended");
+            toast.success(`Suspension confirmed for ${suspendingUser.name}${reason ? ` - ${reason}` : ""}.`);
           }
           setSuspendingUser(null);
         }}

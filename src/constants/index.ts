@@ -13,7 +13,9 @@ export const ROUTES = {
   SETTINGS: "/settings",
 } as const;
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api";
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  "https://e-learning-backend-api-by3v.onrender.com/api/v1";
 
 export const PAGINATION_DEFAULTS = {
   PAGE: 1,

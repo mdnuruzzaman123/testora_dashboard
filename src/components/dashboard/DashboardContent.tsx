@@ -5,20 +5,25 @@ import DashboardDonutChart from "@/components/charts/DashboardDonutChart";
 import DashboardHorizontalBarChart from "@/components/charts/DashboardHorizontalBarChart";
 import YearSelect from "@/components/dashboard/YearSelect";
 import {
-  alertIcon,
   categoryShareByYear,
   contentAlerts,
   contentMetrics,
-  dashboardStats,
   dashboardYears,
-  monthlyUserGrowthByYear,
   premiumByProductByYear,
   premiumHighlightsByYear,
-  recentUsers,
   salesBreakdownByYear,
   type DashboardYear,
 } from "@/lib/dashboard-sample-data";
+import {
+  formatDate,
+  formatCount,
+  formatRelativeTime,
+  getPlanClass,
+  getStatusClass,
+  mapGrowth,
+} from "@/lib/dashboard-utils";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import {
   ArrowUpRight,
   CircleAlert,
@@ -27,9 +32,16 @@ import {
   UserRoundMinus,
   Users,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { toast } from "sonner";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  useGetDashboardStatsQuery,
+  useGetRecentActiveUsersQuery,
+  useGetUserGrowthQuery,
+  type AdminRecentUser,
+} from "@/store/apis";
 
-function Surface({ className, children }: { className?: string; children: React.ReactNode }) {
+function Surface({ className, children }: { className?: string; children: ReactNode }) {
   return (
     <section className={cn("rounded-lg border border-[#dce7f2] bg-white", className)}>
       {children}
@@ -48,62 +60,130 @@ function StatIcon({ index }: { index: number }) {
   );
 }
 
-function getCategoryClass(category: string) {
-  if (category === "Matura") return "bg-[#eaf2fb] text-[#4d93d9] border-[#d6e5f4]";
-  if (category === "Semimatura") return "bg-[#edf0fb] text-[#748ccc] border-[#dce4f6]";
-  return "bg-[#e9f5f1] text-[#3b9b81] border-[#d5ece5]";
+function Skeleton({ className }: { className?: string }) {
+  return <div className={cn("animate-pulse rounded-md bg-slate-200/80", className)} />;
 }
 
-function getPlanClass(plan: string) {
-  if (plan === "Free") return "bg-[#f2f6fb] text-[#6d839a] border-[#dee8f2]";
-  if (plan.includes("Matura")) return "bg-[#ebf3fc] text-[#4d93d9] border-[#d6e6f4]";
-  if (plan.includes("Semimatura")) return "bg-[#f1edfb] text-[#8468c4] border-[#e4ddf4]";
-  return "bg-[#edf4fd] text-[#5f88bd] border-[#dbe7f4]";
-}
-
-function getStatusClass(status: "Active" | "Suspended") {
-  return status === "Active"
-    ? "bg-[#e9f8ef] text-[#3ea666] border-[#d0ecd9]"
-    : "bg-[#fdeeee] text-[#db6f6f] border-[#f4d7d7]";
-}
-
-function SalesSnapshot({ year }: { year: DashboardYear }) {
-  const chartData = premiumByProductByYear[year];
-  const rows = salesBreakdownByYear[year];
-  const totalUsers = chartData.reduce((sum, item) => sum + item.value, 0);
-
+function SectionSkeleton() {
   return (
-    <Surface className="p-4 sm:p-5">
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <div>
-          <h3 className="text-sm font-semibold text-[#3f5f7a]">Plans / Sales Snapshot</h3>
-          <p className="text-xs text-[#8ea1b4]">
-            Active subscriptions by product — {totalUsers.toLocaleString()} total
-          </p>
-        </div>
-        <button className="text-xs font-medium text-[#2f86d8]">Sales Report ↗</button>
-      </div>
-      <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
-        <DashboardHorizontalBarChart data={chartData} height={258} showXAxisTicks />
-        <div className="space-y-2.5 rounded-md border border-[#dce7f2] p-3">
-          <p className="text-[11px] font-semibold tracking-wide text-[#90a2b5] uppercase">
-            Product Breakdown
-          </p>
-          {rows.map((item) => (
-            <div
-              key={item.label}
-              className="grid grid-cols-[1fr_auto] items-center gap-2 border-b border-[#ecf2f8] pb-2 text-xs last:border-b-0 last:pb-0"
-            >
-              <div>
-                <p className="font-medium text-[#4f6d87]">{item.label}</p>
-                <p className="text-[11px] text-[#8fa2b5]">
-                  {item.amount} / {item.users} users
-                </p>
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <Surface key={index} className="p-3.5">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-8 w-8 rounded-md" />
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-6 w-16" />
               </div>
-              <span className="text-[11px] font-medium text-[#3ea666]">{item.change}</span>
             </div>
-          ))}
-        </div>
+          </Surface>
+        ))}
+      </div>
+      <div className="grid gap-3 xl:grid-cols-2">
+        <Surface className="p-4 sm:p-5">
+          <Skeleton className="mb-4 h-4 w-40" />
+          <Skeleton className="h-76 w-full" />
+        </Surface>
+        <Surface className="p-4 sm:p-5">
+          <Skeleton className="mb-4 h-4 w-48" />
+          <Skeleton className="h-76 w-full" />
+        </Surface>
+      </div>
+      <Surface className="overflow-hidden">
+        <Skeleton className="h-[360px] w-full" />
+      </Surface>
+    </div>
+  );
+}
+
+function getOverviewStatsFromApi(
+  stats?: {
+    totalUsers: number;
+    activeAccounts: number;
+    blockedAccounts: number;
+    premiumUsers: number;
+  }
+) {
+  return [
+    { label: "Total Users", value: stats?.totalUsers ?? 0 },
+    { label: "Active Accounts", value: stats?.activeAccounts ?? 0 },
+    { label: "Blocked Accounts", value: stats?.blockedAccounts ?? 0 },
+    { label: "Premium Users", value: stats?.premiumUsers ?? 0 },
+  ];
+}
+
+function RecentUsersTable({
+  users,
+}: {
+  users: AdminRecentUser[];
+}) {
+  return (
+    <Surface className="overflow-hidden">
+      <div className="border-b border-[#dce7f2] px-4 py-3 sm:px-5">
+        <h3 className="text-sm font-semibold text-[#3f5f7a]">Recent User</h3>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-215 text-left">
+          <thead className="bg-[#f3f7fb] text-[11px] text-[#6f859b]">
+            <tr>
+              <th className="px-4 py-2.5 font-medium sm:px-5">#</th>
+              <th className="px-4 py-2.5 font-medium sm:px-5">User</th>
+              <th className="px-4 py-2.5 font-medium sm:px-5">City</th>
+              <th className="px-4 py-2.5 font-medium sm:px-5">Plan</th>
+              <th className="px-4 py-2.5 font-medium sm:px-5">Joined Date</th>
+              <th className="px-4 py-2.5 font-medium sm:px-5">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user, index) => (
+              <tr
+                key={`${user.email}-${index}`}
+                className="border-b border-[#ecf2f8] text-xs text-[#5e768e] last:border-b-0"
+              >
+                <td className="px-4 py-3 sm:px-5">{index + 1}</td>
+                <td className="px-4 py-3 sm:px-5">
+                  <div className="flex items-center gap-2.5">
+                    <Image
+                      src={user.avatar}
+                      alt={user.fullName}
+                      width={28}
+                      height={28}
+                      className="h-7 w-7 rounded-full object-cover"
+                      unoptimized
+                    />
+                    <div>
+                      <p className="font-medium text-[#4f6d87]">{user.fullName}</p>
+                      <p className="text-[11px] text-[#90a2b5]">{user.email}</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-3 sm:px-5">{user.city ?? "N/A"}</td>
+                <td className="px-4 py-3 sm:px-5">
+                  <span
+                    className={cn(
+                      "rounded-sm border px-2 py-0.5 text-[11px]",
+                      getPlanClass(user.plan)
+                    )}
+                  >
+                    {user.plan ?? "Free"}
+                  </span>
+                </td>
+                <td className="px-4 py-3 sm:px-5">{formatDate(user.createdAt)}</td>
+                <td className="px-4 py-3 sm:px-5">
+                  <span
+                    className={cn(
+                      "rounded-full border px-2 py-0.5 text-[11px]",
+                      getStatusClass(user.status)
+                    )}
+                  >
+                    {user.status}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </Surface>
   );
@@ -114,25 +194,83 @@ export default function DashboardContent() {
   const [productYear, setProductYear] = useState<DashboardYear>(2026);
   const categoryYear: DashboardYear = 2026;
   const salesYear: DashboardYear = 2026;
-
   const years = dashboardYears;
-  const AlertIcon = alertIcon;
+
+  const {
+    data: dashboardStatsResponse,
+    isLoading: isStatsLoading,
+    isError: isStatsError,
+    error: statsError,
+  } = useGetDashboardStatsQuery();
+  const {
+    data: growthResponse,
+    isLoading: isGrowthLoading,
+    isError: isGrowthError,
+    error: growthError,
+  } = useGetUserGrowthQuery();
+  const {
+    data: recentUsersResponse,
+    isLoading: isRecentLoading,
+    isError: isRecentError,
+    error: recentError,
+  } = useGetRecentActiveUsersQuery();
+
+  const previousError = useRef<string | null>(null);
+
+  useEffect(() => {
+    const message =
+      (isStatsError && "Unable to load dashboard stats.") ||
+      (isGrowthError && "Unable to load user growth data.") ||
+      (isRecentError && "Unable to load recent users.") ||
+      null;
+
+    const detail =
+      (isStatsError && (statsError as { data?: { message?: string }; error?: string } | undefined)) ||
+      (isGrowthError && (growthError as { data?: { message?: string }; error?: string } | undefined)) ||
+      (isRecentError && (recentError as { data?: { message?: string }; error?: string } | undefined)) ||
+      undefined;
+
+    if (message && previousError.current !== message) {
+      previousError.current = message;
+      toast.error(detail?.data?.message ?? detail?.error ?? message);
+    }
+  }, [isStatsError, isGrowthError, isRecentError, statsError, growthError, recentError]);
+
+  const stats = useMemo(
+    () => getOverviewStatsFromApi(dashboardStatsResponse?.data),
+    [dashboardStatsResponse]
+  );
+
+  const growthData = useMemo(
+    () => mapGrowth(growthResponse?.data ?? []),
+    [growthResponse]
+  );
+
+  const recentUsers = recentUsersResponse?.data ?? [];
 
   const topCategory = useMemo(() => {
     const data = categoryShareByYear[categoryYear];
     return data.reduce((acc, item) => (item.value > acc.value ? item : acc), data[0]);
   }, [categoryYear]);
 
+  const loading = isStatsLoading || isGrowthLoading || isRecentLoading;
+
+  if (loading && !dashboardStatsResponse && !growthResponse && !recentUsersResponse) {
+    return <SectionSkeleton />;
+  }
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {dashboardStats.map((item, index) => (
+        {stats.map((item, index) => (
           <Surface key={item.label} className="p-3.5">
             <div className="flex items-center gap-3">
               <StatIcon index={index} />
               <div>
                 <p className="text-[11px] text-[#90a3b6]">{item.label}</p>
-                <p className="text-[22px] leading-6 font-semibold text-[#3f5f7a]">{item.value}</p>
+                <p className="text-[22px] leading-6 font-semibold text-[#3f5f7a]">
+                  {formatCount(item.value)}
+                </p>
               </div>
             </div>
           </Surface>
@@ -149,7 +287,13 @@ export default function DashboardContent() {
               onChange={(value) => setGrowthYear(value as DashboardYear)}
             />
           </div>
-          <DashboardAreaChart data={monthlyUserGrowthByYear[growthYear]} />
+          {growthData.length > 0 ? (
+            <DashboardAreaChart data={growthData} />
+          ) : (
+            <div className="flex h-76 items-center justify-center rounded-md border border-dashed border-[#dce7f2] bg-[#f8fbff] text-sm text-[#8ea1b4]">
+              No growth data available
+            </div>
+          )}
         </Surface>
 
         <Surface className="p-4 sm:p-5">
@@ -214,79 +358,7 @@ export default function DashboardContent() {
         </Surface>
       </div>
 
-      <Surface className="overflow-hidden">
-        <div className="border-b border-[#dce7f2] px-4 py-3 sm:px-5">
-          <h3 className="text-sm font-semibold text-[#3f5f7a]">Recent User</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-215 text-left">
-            <thead className="bg-[#f3f7fb] text-[11px] text-[#6f859b]">
-              <tr>
-                <th className="px-4 py-2.5 font-medium sm:px-5">#</th>
-                <th className="px-4 py-2.5 font-medium sm:px-5">User</th>
-                <th className="px-4 py-2.5 font-medium sm:px-5">Category</th>
-                <th className="px-4 py-2.5 font-medium sm:px-5">Active Plan</th>
-                <th className="px-4 py-2.5 font-medium sm:px-5">Last Activity</th>
-                <th className="px-4 py-2.5 font-medium sm:px-5">Joined Date</th>
-                <th className="px-4 py-2.5 font-medium sm:px-5">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentUsers.map((user, index) => (
-                <tr
-                  key={user.id}
-                  className="border-b border-[#ecf2f8] text-xs text-[#5e768e] last:border-b-0"
-                >
-                  <td className="px-4 py-3 sm:px-5">{index + 1}</td>
-                  <td className="px-4 py-3 sm:px-5">
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#e8f2fc] text-[11px] font-semibold text-[#4b92d9]">
-                        {user.initials}
-                      </div>
-                      <div>
-                        <p className="font-medium text-[#4f6d87]">{user.name}</p>
-                        <p className="text-[11px] text-[#90a2b5]">{user.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 sm:px-5">
-                    <span
-                      className={cn(
-                        "rounded-sm border px-2 py-0.5 text-[11px]",
-                        getCategoryClass(user.category)
-                      )}
-                    >
-                      {user.category}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 sm:px-5">
-                    <span
-                      className={cn(
-                        "rounded-sm border px-2 py-0.5 text-[11px]",
-                        getPlanClass(user.activePlan)
-                      )}
-                    >
-                      {user.activePlan}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 sm:px-5">{user.lastActivity}</td>
-                  <td className="px-4 py-3 sm:px-5">{user.joinedDate}</td>
-                  <td className="px-4 py-3 sm:px-5">
-                    <span
-                      className={cn(
-                        "rounded-full border px-2 py-0.5 text-[11px]",
-                        getStatusClass(user.status)
-                      )}
-                    >
-                      {user.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Surface>
+      <RecentUsersTable users={recentUsers} />
 
       <Surface className="p-4 sm:p-5">
         <div className="mb-3 flex items-center justify-between gap-2">
@@ -339,7 +411,7 @@ export default function DashboardContent() {
                           : "border-[#d8e8f7] bg-[#eaf3fd] text-[#4c93d9]"
                     )}
                   >
-                    <AlertIcon className="h-3.5 w-3.5" />
+                    <CircleAlert className="h-3.5 w-3.5" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
@@ -371,7 +443,42 @@ export default function DashboardContent() {
         </div>
       </Surface>
 
-      <SalesSnapshot year={salesYear} />
+      <Surface className="p-4 sm:p-5">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <div>
+            <h3 className="text-sm font-semibold text-[#3f5f7a]">Plan Summary</h3>
+            <p className="text-xs text-[#8ea1b4]">Static breakdown retained from the dashboard design</p>
+          </div>
+          <span className="text-xs text-[#8ea1b4]">
+            Updated {formatRelativeTime(recentUsers[0]?.createdAt ?? new Date().toISOString())}
+          </span>
+        </div>
+        <div className="grid gap-3 xl:grid-cols-2">
+          <div className="rounded-md border border-[#dce7f2] p-3.5">
+            <h4 className="mb-3 text-sm font-semibold text-[#3f5f7a]">Plan Snapshot</h4>
+            <DashboardHorizontalBarChart data={premiumByProductByYear[salesYear]} height={220} />
+          </div>
+          <div className="rounded-md border border-[#dce7f2] p-3.5">
+            <h4 className="mb-3 text-sm font-semibold text-[#3f5f7a]">Sales Notes</h4>
+            <div className="space-y-2">
+              {salesBreakdownByYear[salesYear].map((item) => (
+                <div
+                  key={item.label}
+                  className="flex items-center justify-between rounded-md border border-[#e6edf5] px-3 py-2 text-xs text-[#5e768e]"
+                >
+                  <div>
+                    <p className="font-medium text-[#4f6d87]">{item.label}</p>
+                    <p className="text-[11px] text-[#90a2b5]">
+                      {item.amount} / {item.users} users
+                    </p>
+                  </div>
+                  <span className="text-[11px] font-medium text-[#3ea666]">{item.change}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Surface>
     </div>
   );
 }
