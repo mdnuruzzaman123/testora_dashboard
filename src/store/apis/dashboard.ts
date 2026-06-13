@@ -1,5 +1,5 @@
-import { baseApi } from "../baseApi";
 import type { ApiEnvelope } from "./authApi";
+import { baseApi } from "./baseApi";
 
 export interface AdminDashboardStats {
   totalUsers: number;

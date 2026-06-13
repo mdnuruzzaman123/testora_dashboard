@@ -1,4 +1,4 @@
-import { baseApi } from "../baseApi";
+import { baseApi } from "./baseApi";
 
 export interface ApiEnvelope<T = unknown> {
   statusCode: number;
@@ -21,6 +21,7 @@ export interface LoginData {
     name: string;
     email: string;
     role: string;
+    avatar?: string;
   };
 }
 
@@ -40,6 +41,12 @@ export interface ResetPasswordRequest {
 
 export interface RefreshTokenRequest {
   refreshToken: string;
+}
+
+export interface GetMeData {
+  name: string;
+  email: string;
+  avatar: string;
 }
 
 export function getErrorMessage(error: unknown, fallback = "Something went wrong."): string {
@@ -81,6 +88,10 @@ export const authApi = baseApi.injectEndpoints({
     refreshToken: builder.mutation<ApiEnvelope<LoginData>, RefreshTokenRequest>({
       query: (body) => ({ url: "/auth/refresh-token", method: "POST", body }),
     }),
+    getMe: builder.query<ApiEnvelope<GetMeData>, void>({
+      query: () => "/admin/get-me",
+      providesTags: ["Auth"],
+    }),
   }),
 });
 
@@ -93,4 +104,5 @@ export const {
   useResendOtpMutation,
   useVerifyEmailMutation,
   useRefreshTokenMutation,
+  useGetMeQuery,
 } = authApi;

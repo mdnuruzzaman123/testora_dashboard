@@ -24,7 +24,6 @@ export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
   const [login, { isLoading: isLoggingIn }] = useLoginMutation();
 
   const {
@@ -37,7 +36,6 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    setServerError(null);
     try {
       const response = await login({ email: data.email, password: data.password }).unwrap();
 
@@ -48,10 +46,18 @@ export default function LoginPage() {
         role: "admin",
       };
 
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("accessToken", response.data.accessToken);
+        if (response.data.refreshToken) {
+          window.localStorage.setItem("refreshToken", response.data.refreshToken);
+        }
+      }
+
       dispatch(
         setCredentials({
           user,
           token: response.data.accessToken,
+          refreshToken: response.data.refreshToken ?? null,
         })
       );
 
@@ -59,7 +65,6 @@ export default function LoginPage() {
       router.push("/dashboard");
     } catch (error) {
       const message = getErrorMessage(error, "Invalid credentials. Please try again.");
-      setServerError(message);
       toast.error(message);
     }
   };
@@ -70,13 +75,6 @@ export default function LoginPage() {
     <div className="w-full max-w-100">
       <h1 className="mb-1 text-2xl font-bold text-gray-900">Testora</h1>
       <p className="mb-6 text-sm text-gray-500">Login to your account</p>
-
-      {serverError && (
-        <div className="mb-5 flex items-center gap-2.5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          {serverError}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
         {/* Email or Username */}

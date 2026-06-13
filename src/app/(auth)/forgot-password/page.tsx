@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -19,7 +18,6 @@ type FormValues = z.infer<typeof schema>;
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
-  const [serverError, setServerError] = useState<string | null>(null);
   const [forgotPassword, { isLoading: isSending }] = useForgotPasswordMutation();
 
   const {
@@ -29,14 +27,13 @@ export default function ForgotPasswordPage() {
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (data: FormValues) => {
-    setServerError(null);
     try {
       const response = await forgotPassword({ email: data.email }).unwrap();
       toast.success(response.message || "OTP sent to your email.");
       router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
     } catch (error) {
       const message = getErrorMessage(error, "Something went wrong. Please try again.");
-      setServerError(message);
+
       toast.error(message);
     }
   };
@@ -47,13 +44,6 @@ export default function ForgotPasswordPage() {
     <div className="w-full max-w-100">
       <h2 className="mb-1 text-2xl font-bold text-gray-900">Forgot Password</h2>
       <p className="mb-6 text-sm text-gray-500">Enter your email address</p>
-
-      {serverError && (
-        <div className="mb-4 flex items-center gap-2.5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          {serverError}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
         <div>

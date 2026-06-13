@@ -52,7 +52,6 @@ function ResetPasswordForm() {
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
   const [resetPassword, { isLoading: isResetting }] = useResetPasswordMutation();
 
   const {
@@ -67,11 +66,9 @@ function ResetPasswordForm() {
   const { label: strengthText, color: strengthColor } = strengthLabel(metCount);
 
   const onSubmit = async (data: FormValues) => {
-    setServerError(null);
-
     if (!email) {
       const message = "Email is missing. Please restart the reset flow.";
-      setServerError(message);
+
       toast.error(message);
       return;
     }
@@ -82,7 +79,7 @@ function ResetPasswordForm() {
       setSuccess(true);
     } catch (error) {
       const message = getErrorMessage(error, "Something went wrong. Please try again.");
-      setServerError(message);
+
       toast.error(message);
     }
   };
@@ -131,13 +128,6 @@ function ResetPasswordForm() {
       <p className="mb-6 text-center text-sm text-gray-500">
         Your new password must be different from your previous password.
       </p>
-
-      {serverError && (
-        <div className="mb-4 flex items-center gap-2.5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          {serverError}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
         {/* New password */}
