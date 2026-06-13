@@ -1,4 +1,4 @@
-import { Download, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 type UserFiltersProps = {
   search: string;
@@ -29,8 +29,8 @@ function FilterSelect({
   label: string;
 }) {
   return (
-    <label className="inline-flex min-w-32.5 items-center gap-1 rounded-md border border-[#dce7f2] bg-[#f8fbff] px-2.5 py-1.5 text-xs text-[#587189]">
-      <span>{label}:</span>
+    <label className="inline-flex shrink-0 items-center gap-1 rounded-md border border-[#dce7f2] bg-[#f8fbff] px-2.5 py-1.5 text-xs text-[#587189]">
+      <span className="whitespace-nowrap">{label}:</span>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -49,18 +49,22 @@ function FilterSelect({
 export default function UserFilters(props: UserFiltersProps) {
   return (
     <div className="rounded-lg border border-[#dce7f2] bg-white p-3">
-      <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-1 flex-col gap-2 md:flex-row md:flex-wrap md:items-center">
-          <label className="relative block w-full md:max-w-67.5">
-            <Search className="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-[#9ab0c3]" />
-            <input
-              value={props.search}
-              onChange={(event) => props.onSearchChange(event.target.value)}
-              placeholder="Search by name or email..."
-              className="h-9 w-full rounded-md border border-[#dce7f2] bg-[#f8fbff] pr-3 pl-8 text-sm text-[#3f5f7a] outline-none placeholder:text-[#9ab0c3]"
-            />
-          </label>
-
+      {/* Mobile: search on top, filters wrap below */}
+      {/* md+: single row — filters left (shrink-0), search fills remaining space */}
+      <div className="flex flex-col gap-2 md:flex-row md:items-center">
+           {/* Search — full width on mobile, fills remaining space on md+ */}
+        <label className="relative block w-full md:flex-1">
+          <Search className="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-[#9ab0c3]" />
+          <input
+            value={props.search}
+            onChange={(event) => props.onSearchChange(event.target.value)}
+            placeholder="Search by name or email..."
+            className="h-9 w-full rounded-md border border-[#dce7f2] bg-[#f8fbff] pr-3 pl-8 text-sm text-[#3f5f7a] outline-none placeholder:text-[#9ab0c3]"
+          />
+        </label>
+        
+        {/* Filters row — wraps on mobile, stays inline on md+ */}
+        <div className="flex flex-wrap items-center gap-2">
           <FilterSelect
             value={props.category}
             onChange={props.onCategoryChange}
@@ -87,13 +91,7 @@ export default function UserFilters(props: UserFiltersProps) {
           />
         </div>
 
-        <button
-          type="button"
-          className="inline-flex h-9 items-center justify-center gap-1 rounded-md border border-[#dce7f2] bg-[#f8fbff] px-3 text-xs font-medium text-[#3f5f7a]"
-        >
-          <Download className="h-3.5 w-3.5" />
-          Export CSV
-        </button>
+
       </div>
     </div>
   );

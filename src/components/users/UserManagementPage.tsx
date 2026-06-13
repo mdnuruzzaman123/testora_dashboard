@@ -6,14 +6,11 @@ import UserDetailsModal from "@/components/users/UserDetailsModal";
 import UserFilters from "@/components/users/UserFilters";
 import UsersTable from "@/components/users/UsersTable";
 import { PAGINATION_DEFAULTS } from "@/constants";
-import { cn } from "@/lib/utils";
 import { mapUser } from "@/lib/user-management-utils";
+import { cn } from "@/lib/utils";
+import { useGetUserListQuery, useGetUserOverviewQuery } from "@/store/apis";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import {
-  useGetUserListQuery,
-  useGetUserOverviewQuery,
-} from "@/store/apis";
 import type { UserManagementRow } from "./UserRow";
 
 const statusOptions = ["All", "active", "blocked", "disabled"];
@@ -27,7 +24,10 @@ function PageSkeleton() {
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, index) => (
-          <div key={index} className="h-24 animate-pulse rounded-lg border border-[#dce7f2] bg-white" />
+          <div
+            key={index}
+            className="h-24 animate-pulse rounded-lg border border-[#dce7f2] bg-white"
+          />
         ))}
       </div>
       <div className="h-16 animate-pulse rounded-lg border border-[#dce7f2] bg-white" />
@@ -40,13 +40,17 @@ export default function UserManagementPage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
   const [plan, setPlan] = useState("All");
-  const [page, setPage] = useState(PAGINATION_DEFAULTS.PAGE);
-  const [rowsPerPage, setRowsPerPage] = useState(PAGINATION_DEFAULTS.LIMIT);
+  const [page, setPage] = useState<number>(PAGINATION_DEFAULTS.PAGE);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(PAGINATION_DEFAULTS.LIMIT);
   const [viewingUser, setViewingUser] = useState<UserManagementRow | null>(null);
   const [suspendingUser, setSuspendingUser] = useState<UserManagementRow | null>(null);
 
-  const { data: overviewResponse, isLoading: isOverviewLoading, isError: overviewError, error: overviewFetchError } =
-    useGetUserOverviewQuery();
+  const {
+    data: overviewResponse,
+    isLoading: isOverviewLoading,
+    isError: overviewError,
+    error: overviewFetchError,
+  } = useGetUserOverviewQuery();
   const {
     data: usersResponse,
     isLoading: isUsersLoading,
@@ -87,20 +91,20 @@ export default function UserManagementPage() {
     return ["All", ...availablePlans];
   }, [usersResponse]);
 
-  const users = useMemo(() => (usersResponse?.data.data ?? []).map(mapUser), [usersResponse]);
+  const users = useMemo(() => (usersResponse?.data?.data ?? []).map(mapUser), [usersResponse]);
 
   const stats = useMemo(
     () => ({
-      total: overviewResponse?.data.totalUsers ?? 0,
-      active: overviewResponse?.data.activeAccounts ?? 0,
-      suspended: overviewResponse?.data.blockedAccounts ?? 0,
-      inactive: overviewResponse?.data.disabledAccounts ?? 0,
+      total: overviewResponse?.data?.totalUsers ?? 0,
+      active: overviewResponse?.data?.activeAccounts ?? 0,
+      suspended: overviewResponse?.data?.blockedAccounts ?? 0,
+      inactive: overviewResponse?.data?.disabledAccounts ?? 0,
     }),
     [overviewResponse]
   );
 
-  const totalItems = usersResponse?.data.meta.total ?? 0;
-  const totalPages = usersResponse?.data.meta.totalPages ?? 1;
+  const totalItems = usersResponse?.data?.meta?.total ?? 0;
+  const totalPages = usersResponse?.data?.meta?.totalPages ?? 1;
   const safePage = Math.min(page, totalPages);
   const isLoading = isOverviewLoading || isUsersLoading;
   const isRefreshing = isUsersFetching && !isUsersLoading;
@@ -153,7 +157,9 @@ export default function UserManagementPage() {
           }}
           onViewUser={setViewingUser}
           onSuspendUser={setSuspendingUser}
-          onDeactivateUser={(user) => toast.info(`Deactivate flow for ${user.name} is not wired yet.`)}
+          onDeactivateUser={(user) =>
+            toast.info(`Deactivate flow for ${user.name} is not wired yet.`)
+          }
           onArchiveUser={(user) => toast.info(`Archive flow for ${user.name} is not wired yet.`)}
         />
       </div>
@@ -176,7 +182,9 @@ export default function UserManagementPage() {
         onClose={() => setSuspendingUser(null)}
         onConfirm={(reason) => {
           if (suspendingUser) {
-            toast.success(`Suspension confirmed for ${suspendingUser.name}${reason ? ` - ${reason}` : ""}.`);
+            toast.success(
+              `Suspension confirmed for ${suspendingUser.name}${reason ? ` - ${reason}` : ""}.`
+            );
           }
           setSuspendingUser(null);
         }}
