@@ -1,26 +1,44 @@
 "use client";
 
-import { archiveInfoBullets, testArchiveRows } from "@/lib/test-archive-data";
+import { archiveInfoBullets } from "@/lib/test-archive-data";
+import { useGetTestArchiveQuery, type TestArchiveItem } from "@/store/apis";
 import { Filter, Info, Plus, Search } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import DuplicateToolsSection from "./DuplicateToolsSection";
 import TestArchiveTable from "./TestArchiveTable";
 
+function mapTest(row: TestArchiveItem) {
+  return {
+    id: row._id,
+    title: row.title,
+    category: row.examType === "provime" ? "Entrance Exam" : row.examType === "matura" ? "Matura" : "Semimatura",
+    year: String(row.year),
+    subjectCategory: row.subjectName ?? row.facultyName,
+    type: row.testType === "official" ? "Official" : "Additional",
+    access: row.access === "premium" ? "Premium" : "Free",
+    questions: row.totalQuestions,
+    status:
+      row.status === "published" ? "Published" : row.status === "draft" ? "Draft" : "Hidden",
+  } as const;
+}
+
 export default function TestArchivePage() {
   const [search, setSearch] = useState("");
+  const { data, isLoading, isError } = useGetTestArchiveQuery({ testType: "official" });
 
   const filteredRows = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return testArchiveRows;
-    return testArchiveRows.filter(
+    const rows = (data?.data.tests ?? []).map(mapTest);
+    if (!query) return rows;
+    return rows.filter(
       (row) =>
         row.id.toLowerCase().includes(query) ||
         row.title.toLowerCase().includes(query) ||
         row.category.toLowerCase().includes(query) ||
         row.subjectCategory.toLowerCase().includes(query)
     );
-  }, [search]);
+  }, [data, search]);
 
   return (
     <div className="space-y-3">
@@ -78,7 +96,11 @@ export default function TestArchivePage() {
         </div>
       </section>
 
-      <TestArchiveTable rows={filteredRows} />
+      {isLoading ? (
+        <div className="h-52 animate-pulse rounded-lg border border-[#dce7f2] bg-white" />
+      ) : null}
+
+      {isError ? null : <TestArchiveTable rows={filteredRows} />}
       <DuplicateToolsSection />
     </div>
   );

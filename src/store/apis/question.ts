@@ -63,6 +63,53 @@ export interface QuestionListParams {
   searchTerm?: string;
 }
 
+export interface QuestionOverviewData {
+  totalQuestions: number;
+  publishedTests: number;
+  totalPassages: number;
+  activeStudents: number;
+  totalQuizSessions: number;
+}
+
+export interface TestArchiveItem {
+  _id: string;
+  title: string;
+  testCode: string;
+  testType: string;
+  examType: string;
+  year: number;
+  totalQuestions: number;
+  access: string;
+  status: string;
+  createdAt: string;
+  subjectName: string | null;
+  facultyName: string;
+  departments: string[];
+}
+
+export interface TestArchiveResponse {
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+  tests: TestArchiveItem[];
+}
+
+export interface TestArchiveParams {
+  page?: number;
+  limit?: number;
+  testType?: string;
+}
+
+export interface CreatePassageRequest {
+  passageCode: string;
+  title: string;
+  content: string;
+  passageImage?: File | null;
+}
+
 function buildQuery(params?: QuestionListParams) {
   if (!params) return "";
 
@@ -76,6 +123,36 @@ function buildQuery(params?: QuestionListParams) {
   return query ? `?${query}` : "";
 }
 
+function buildArchiveQuery(params?: TestArchiveParams) {
+  if (!params) return "";
+
+  const searchParams = new URLSearchParams();
+  if (params.page) searchParams.set("page", String(params.page));
+  if (params.limit) searchParams.set("limit", String(params.limit));
+  if (params.testType) searchParams.set("testType", params.testType);
+
+  const query = searchParams.toString();
+  return query ? `?${query}` : "";
+}
+
+function buildPassageFormData(body: CreatePassageRequest) {
+  const formData = new FormData();
+  formData.append(
+    "data",
+    JSON.stringify({
+      passageCode: body.passageCode,
+      title: body.title,
+      content: body.content,
+    })
+  );
+
+  if (body.passageImage) {
+    formData.append("passage_image", body.passageImage);
+  }
+
+  return formData;
+}
+
 export const questionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getQuestions: builder.query<ApiEnvelope<QuestionListResponse>, QuestionListParams | void>({
@@ -86,8 +163,29 @@ export const questionApi = baseApi.injectEndpoints({
       query: (questionId) => `/admin/questions/single/${questionId}`,
       providesTags: ["Auth"],
     }),
+    getQuestionOverview: builder.query<ApiEnvelope<QuestionOverviewData>, void>({
+      query: () => "/admin/questions/overview",
+      providesTags: ["Questions"],
+    }),
+    getTestArchive: builder.query<ApiEnvelope<TestArchiveResponse>, TestArchiveParams | void>({
+      query: (params) => `/admin/questions/test-archive${buildArchiveQuery(params ?? undefined)}`,
+      providesTags: ["Questions"],
+    }),
+    createPassage: builder.mutation<ApiEnvelope<unknown>, CreatePassageRequest>({
+      query: (body) => ({
+        url: "/admin/questions/passage/add",
+        method: "POST",
+        body: buildPassageFormData(body),
+      }),
+      invalidatesTags: ["Questions"],
+    }),
   }),
 });
 
 export const { useGetQuestionsQuery, useGetSingleQuestionQuery, useLazyGetSingleQuestionQuery } =
   questionApi;
+export const {
+  useGetQuestionOverviewQuery,
+  useGetTestArchiveQuery,
+  useCreatePassageMutation,
+} = questionApi;

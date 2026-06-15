@@ -1,7 +1,6 @@
 import { type PassageRow, type PassageStatus } from "@/lib/passages-data";
 import { cn } from "@/lib/utils";
 import { Copy, Eye, ImageIcon, Pencil, Trash2 } from "lucide-react";
-import Link from "next/link";
 
 function statusClass(status: PassageStatus) {
   if (status === "Published") return "border-[#d0ecd9] bg-[#e9f8ef] text-[#3ea666]";
@@ -10,7 +9,13 @@ function statusClass(status: PassageStatus) {
   return "border-[#f4d7d7] bg-[#fdeeee] text-[#db6f6f]";
 }
 
-export default function PassageTableRow({ row }: { row: PassageRow }) {
+export default function PassageTableRow({
+  row,
+  onEdit,
+}: {
+  row: PassageRow;
+  onEdit?: (id: string) => void;
+}) {
   return (
     <tr className="border-b border-[#ecf2f8] text-xs text-[#5e768e] last:border-b-0 hover:bg-[#f8fbff]">
       <td className="px-3 py-2.5 font-semibold text-[#2f86d8]">{row.code}</td>
@@ -44,13 +49,14 @@ export default function PassageTableRow({ row }: { row: PassageRow }) {
           <button type="button" title="View" className="text-[#9ab0c3] hover:text-[#4a93d9]">
             <Eye className="h-3.5 w-3.5" />
           </button>
-          <Link
-            href="/questions/passages/add"
+          <button
+            type="button"
             title="Edit"
+            onClick={() => onEdit?.(row.id)}
             className="text-[#9ab0c3] hover:text-[#3f5f7a]"
           >
             <Pencil className="h-3.5 w-3.5" />
-          </Link>
+          </button>
           <button type="button" title="Duplicate" className="text-[#9ab0c3] hover:text-[#7b6db5]">
             <Copy className="h-3.5 w-3.5" />
           </button>

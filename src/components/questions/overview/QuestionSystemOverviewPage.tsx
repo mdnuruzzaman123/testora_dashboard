@@ -1,4 +1,7 @@
+"use client";
+
 import { cn } from "@/lib/utils";
+import { useGetQuestionOverviewQuery } from "@/store/apis";
 import {
   BarChart3,
   BookMarked,
@@ -11,41 +14,6 @@ import {
   Info,
   Layers3,
 } from "lucide-react";
-
-// ─── Static data ──────────────────────────────────────────────────────────────
-
-const overviewStats = [
-  {
-    label: "Total Questions",
-    value: "4,287",
-    icon: CircleHelp,
-    iconClass: "border-[#d7e6f4] bg-[#eff5fc] text-[#2f86d8]",
-  },
-  {
-    label: "Published Tests",
-    value: "156",
-    icon: FileCheck2,
-    iconClass: "border-[#d4ecde] bg-[#eaf7f0] text-[#3ea666]",
-  },
-  {
-    label: "Passages",
-    value: "89",
-    icon: BookMarked,
-    iconClass: "border-[#e4ddf4] bg-[#f1edfb] text-[#8468c4]",
-  },
-  {
-    label: "Active Students",
-    value: "12,430",
-    icon: GraduationCap,
-    iconClass: "border-[#f0dfb9] bg-[#fff6e3] text-[#c48a2e]",
-  },
-  {
-    label: "Quiz Sessions",
-    value: "45.2K",
-    icon: BarChart3,
-    iconClass: "border-[#f3dddd] bg-[#feefef] text-[#db6f6f]",
-  },
-];
 
 const flowItems = [
   {
@@ -127,12 +95,43 @@ const summaryCards = [
   },
 ];
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+const statConfig = [
+  {
+    label: "Total Questions",
+    key: "totalQuestions",
+    icon: CircleHelp,
+    iconClass: "border-[#d7e6f4] bg-[#eff5fc] text-[#2f86d8]",
+  },
+  {
+    label: "Published Tests",
+    key: "publishedTests",
+    icon: FileCheck2,
+    iconClass: "border-[#d4ecde] bg-[#eaf7f0] text-[#3ea666]",
+  },
+  {
+    label: "Passages",
+    key: "totalPassages",
+    icon: BookMarked,
+    iconClass: "border-[#e4ddf4] bg-[#f1edfb] text-[#8468c4]",
+  },
+  {
+    label: "Active Students",
+    key: "activeStudents",
+    icon: GraduationCap,
+    iconClass: "border-[#f0dfb9] bg-[#fff6e3] text-[#c48a2e]",
+  },
+  {
+    label: "Quiz Sessions",
+    key: "totalQuizSessions",
+    icon: BarChart3,
+    iconClass: "border-[#f3dddd] bg-[#feefef] text-[#db6f6f]",
+  },
+];
 
-function StatsCards() {
+function StatsCards({ stats }: { stats: Record<string, number> }) {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
-      {overviewStats.map((item) => {
+      {statConfig.map((item) => {
         const Icon = item.icon;
         return (
           <div key={item.label} className="rounded-lg border border-[#dce7f2] bg-white p-3.5">
@@ -146,7 +145,9 @@ function StatsCards() {
                 <Icon className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-[22px] leading-6 font-semibold text-[#3f5f7a]">{item.value}</p>
+                <p className="text-[22px] leading-6 font-semibold text-[#3f5f7a]">
+                  {(stats[item.key] ?? 0).toLocaleString()}
+                </p>
                 <p className="text-[11px] text-[#90a3b6]">{item.label}</p>
               </div>
             </div>
@@ -164,8 +165,6 @@ function ArchitectureFlowSection() {
       <p className="mt-0.5 text-xs text-[#90a3b6]">
         Questions are created once and reused across all platform features. No data duplication.
       </p>
-
-      {/* Center node */}
       <div className="mt-5 flex justify-center">
         <div className="flex items-center gap-2.5 rounded-lg border border-[#2f86d8] bg-[#2f86d8] px-6 py-3">
           <CircleHelp className="h-4 w-4 text-white/80" />
@@ -175,13 +174,9 @@ function ArchitectureFlowSection() {
           </div>
         </div>
       </div>
-
-      {/* Connector arrow */}
       <div className="flex justify-center py-2 text-[#b0c8e0]">
         <ChevronDown className="h-4 w-4" />
       </div>
-
-      {/* Flow grid */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {flowItems.map((item) => {
           const Icon = item.icon;
@@ -201,29 +196,21 @@ function ArchitectureFlowSection() {
           );
         })}
       </div>
-
-      {/* Key Principles panel */}
-      <PrinciplesPanel />
-    </section>
-  );
-}
-
-function PrinciplesPanel() {
-  return (
-    <div className="mt-4 rounded-md border border-[#c8ddf2] bg-[#eaf4fd] px-4 py-3">
-      <div className="mb-2 flex items-center gap-1.5">
-        <Info className="h-3.5 w-3.5 text-[#4a8fc7]" />
-        <p className="text-xs font-semibold text-[#3a6e9e]">Key Principles</p>
+      <div className="mt-4 rounded-md border border-[#c8ddf2] bg-[#eaf4fd] px-4 py-3">
+        <div className="mb-2 flex items-center gap-1.5">
+          <Info className="h-3.5 w-3.5 text-[#4a8fc7]" />
+          <p className="text-xs font-semibold text-[#3a6e9e]">Key Principles</p>
+        </div>
+        <ul className="space-y-1">
+          {keyPrinciples.map((p) => (
+            <li key={p} className="flex items-start gap-1.5 text-xs text-[#4a7eb8]">
+              <span className="mt-0.5 shrink-0 text-[#4a8fc7]">›</span>
+              {p}
+            </li>
+          ))}
+        </ul>
       </div>
-      <ul className="space-y-1">
-        {keyPrinciples.map((p) => (
-          <li key={p} className="flex items-start gap-1.5 text-xs text-[#4a7eb8]">
-            <span className="mt-0.5 shrink-0 text-[#4a8fc7]">›</span>
-            {p}
-          </li>
-        ))}
-      </ul>
-    </div>
+    </section>
   );
 }
 
@@ -260,9 +247,16 @@ function SummaryFeatureCards() {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 export default function QuestionSystemOverviewPage() {
+  const { data, isLoading, isError } = useGetQuestionOverviewQuery();
+  const stats = data?.data ?? {
+    totalQuestions: 0,
+    publishedTests: 0,
+    totalPassages: 0,
+    activeStudents: 0,
+    totalQuizSessions: 0,
+  };
+
   return (
     <div className="space-y-3">
       <div>
@@ -274,7 +268,19 @@ export default function QuestionSystemOverviewPage() {
         </p>
       </div>
 
-      <StatsCards />
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-[70.5px] animate-pulse rounded-lg border border-[#dce7f2] bg-white"
+            />
+          ))}
+        </div>
+      ) : isError ? null : (
+        <StatsCards stats={stats} />
+      )}
+
       <ArchitectureFlowSection />
       <SummaryFeatureCards />
     </div>

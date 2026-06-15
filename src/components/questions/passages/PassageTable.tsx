@@ -1,7 +1,12 @@
 import { passageRows } from "@/lib/passages-data";
 import PassageTableRow from "./PassageTableRow";
 
-export default function PassageTable({ rows = passageRows }: { rows?: typeof passageRows }) {
+type Props = {
+  rows?: typeof passageRows;
+  onEdit?: (id: string) => void;
+};
+
+export default function PassageTable({ rows = passageRows, onEdit }: Props) {
   return (
     <div className="overflow-x-auto rounded-lg border border-[#dce7f2] bg-white">
       <table className="w-full min-w-175 text-left">
@@ -19,7 +24,7 @@ export default function PassageTable({ rows = passageRows }: { rows?: typeof pas
         </thead>
         <tbody>
           {rows.map((row) => (
-            <PassageTableRow key={row.id} row={row} />
+            <PassageTableRow key={row.id} row={row} onEdit={onEdit} />
           ))}
           {rows.length === 0 && (
             <tr>

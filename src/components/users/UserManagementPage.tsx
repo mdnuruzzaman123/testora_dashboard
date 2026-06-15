@@ -36,6 +36,22 @@ function PageSkeleton() {
   );
 }
 
+function TableSkeleton() {
+  return (
+    <div className="overflow-hidden rounded-lg border border-[#dce7f2] bg-white">
+      <div className="h-12 border-b border-[#dce7f2] bg-slate-100/70" />
+      <div className="space-y-3 p-4">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <div
+            key={index}
+            className="h-11 animate-pulse rounded-md border border-[#ecf2f8] bg-slate-100/80"
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function UserManagementPage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
@@ -108,6 +124,11 @@ export default function UserManagementPage() {
   const safePage = Math.min(page, totalPages);
   const isLoading = isOverviewLoading || isUsersLoading;
   const isRefreshing = isUsersFetching && !isUsersLoading;
+  const showInitialSkeleton = isLoading && !overviewResponse && !usersResponse;
+
+  if (showInitialSkeleton) {
+    return <PageSkeleton />;
+  }
 
   return (
     <div className="space-y-3">
@@ -116,7 +137,7 @@ export default function UserManagementPage() {
         <p className="text-sm text-[#7e95ab]">View, search, and manage all users</p>
       </section>
 
-      {isLoading ? <PageSkeleton /> : <StatsCards stats={stats} />}
+      {isLoading && !overviewResponse ? <PageSkeleton /> : <StatsCards stats={stats} />}
 
       <UserFilters
         search={search}
@@ -144,25 +165,31 @@ export default function UserManagementPage() {
         statuses={statusOptions}
       />
 
-      <div className={cn("relative", isRefreshing && "opacity-90")}>
-        <UsersTable
-          users={users}
-          totalItems={totalItems}
-          page={safePage}
-          rowsPerPage={rowsPerPage}
-          onPageChange={setPage}
-          onRowsPerPageChange={(rows) => {
-            setRowsPerPage(rows);
-            setPage(1);
-          }}
-          onViewUser={setViewingUser}
-          onSuspendUser={setSuspendingUser}
-          onDeactivateUser={(user) =>
-            toast.info(`Deactivate flow for ${user.name} is not wired yet.`)
-          }
-          onArchiveUser={(user) => toast.info(`Archive flow for ${user.name} is not wired yet.`)}
-        />
-      </div>
+      {isLoading && !usersResponse ? (
+        <TableSkeleton />
+      ) : (
+        <div className={cn("relative", isRefreshing && "opacity-90")}>
+          <UsersTable
+            users={users}
+            totalItems={totalItems}
+            page={safePage}
+            rowsPerPage={rowsPerPage}
+            onPageChange={setPage}
+            onRowsPerPageChange={(rows) => {
+              setRowsPerPage(rows);
+              setPage(1);
+            }}
+            onViewUser={setViewingUser}
+            onSuspendUser={setSuspendingUser}
+            onDeactivateUser={(user) =>
+              toast.info(`Deactivate flow for ${user.name} is not wired yet.`)
+            }
+            onArchiveUser={(user) =>
+              toast.info(`Archive flow for ${user.name} is not wired yet.`)
+            }
+          />
+        </div>
+      )}
 
       {users.length === 0 && !isLoading ? (
         <div className="rounded-lg border border-dashed border-[#dce7f2] bg-white px-4 py-8 text-center text-sm text-[#7e95ab]">
