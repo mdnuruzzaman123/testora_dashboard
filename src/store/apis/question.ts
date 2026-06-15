@@ -1,5 +1,5 @@
-import { baseApi } from "./baseApi";
 import type { ApiEnvelope } from "./authApi";
+import { baseApi } from "./baseApi";
 
 export interface QuestionListItem {
   _id: string;
@@ -64,6 +64,7 @@ export interface QuestionListParams {
 }
 
 export interface QuestionOverviewData {
+  [key: string]: number;
   totalQuestions: number;
   publishedTests: number;
   totalPassages: number;
@@ -184,8 +185,5 @@ export const questionApi = baseApi.injectEndpoints({
 
 export const { useGetQuestionsQuery, useGetSingleQuestionQuery, useLazyGetSingleQuestionQuery } =
   questionApi;
-export const {
-  useGetQuestionOverviewQuery,
-  useGetTestArchiveQuery,
-  useCreatePassageMutation,
-} = questionApi;
+export const { useGetQuestionOverviewQuery, useGetTestArchiveQuery, useCreatePassageMutation } =
+  questionApi;

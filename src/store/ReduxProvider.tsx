@@ -1,7 +1,7 @@
 "use client";
 
-import { useGetMeQuery, useRefreshTokenMutation } from "@/store/apis";
 import { store } from "@/store";
+import { useGetMeQuery, useRefreshTokenMutation } from "@/store/apis";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout, setCredentials, setLoading } from "@/store/slices/authSlice";
 import { useEffect, useRef } from "react";
@@ -66,7 +66,6 @@ function AuthBootstrap() {
                 name: "",
                 email: "",
                 role: "admin",
-                avatar: response.data.user?.avatar,
               },
               token: response.data.accessToken,
               refreshToken: response.data.refreshToken ?? refreshToken,
